@@ -126,6 +126,8 @@ void _ls(const char *dir, int op_a, int op_l)
 	}
 	if (!op_l)
 		printf("\n");
+	closedir(dh);
+	free(filename);
 }
 
 
