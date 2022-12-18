@@ -15,7 +15,7 @@
 typedef struct listcars_s
 {
 	int id;
-        int laps;
+	int laps;
 	struct listcars_s *next;
 } listcars_t;
 
