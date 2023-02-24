@@ -8,6 +8,7 @@
 void print_gotcha(int signum)
 {
 	printf("Gotcha! [%d]\n", signum);
+	fflush(stdout);
 }
 
 /**
