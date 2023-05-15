@@ -3,7 +3,7 @@
 
 
 /**
- * thread_entry -make the entry point of a thread
+ * thread_entry - make the entry point of a thread
  * @arg: address to the string
  *
  * Return: always NULL
