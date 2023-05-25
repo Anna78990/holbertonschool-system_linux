@@ -2,21 +2,20 @@
 
 int main(void)
 {
-	int i = 0;
+	int i, j = 0;
 	
-	for (i = 0; i < 3; i++)
+	for (i = 0; i <= 3; i++)
 	{
-		printf("===\n");
-		printf("%d\n", i);
-                printf("---\n");
-	}
+		printf("i = %d\n", i);
 
-	printf("%d\n", i);
-	for (i = 0; i < 3; i++)
-	{
-		printf("===\n");
-		printf("%d\n", i);
-                printf("---\n");
+		for (j = 0; j <= 3; j++)
+		{
+			printf("	j = %d\n", j);
+			if (j == 2)
+			{
+				printf("--\n");
+				break;
+			}
+		}
 	}
-	printf("%d\n", i);
 }
