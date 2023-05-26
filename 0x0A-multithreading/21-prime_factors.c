@@ -4,25 +4,30 @@
 #include "list.h"
 
 /**
- * Checks if a number is prime
- * Returns 1 if the number is prime, 0 otherwise
+ * is_prime - Checks if a number is prime
+ * @n: number to check
+ * Return: 1 if the number is prime, 0 otherwise
  */
 int is_prime(unsigned long n)
 {
 	if (n < 2)
-		return 0;
+		return (0);
 
 	for (unsigned long i = 2; i * i <= n; i++)
 	{
 		if (n % i == 0)
-			return 0;
+			return (0);
 	}
 
 	return (1);
 }
 
 /**
- * Calculates the prime factors of a number and stores them in a list
+ * prime_factors - Calculates the prime factors of
+ * a number and stores them in a list
+ *
+ * @s: string representation of the number to factorize
+ * Return: list of prime factors
  */
 list_t *prime_factors(char const *s)
 {
@@ -30,7 +35,7 @@ list_t *prime_factors(char const *s)
 	list_t *factors = list_init(malloc(sizeof(list_t)));
 
 	if (num < 2)
-		return factors;
+		return (factors);
 
 	unsigned long divisor = 2;
 
@@ -46,9 +51,7 @@ list_t *prime_factors(char const *s)
 				num /= divisor;
 			}
 			else
-			{
 				divisor++;
-			}
 		}
 		else
 			divisor++;
