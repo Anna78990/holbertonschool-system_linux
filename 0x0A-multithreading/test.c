@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <sys/sysinfo.h>
+ 
+
 
 int main(void)
 {
@@ -18,4 +21,6 @@ int main(void)
 			}
 		}
 	}
+	printf("get_nprocs_conf() = %d, get_nprocs() = %d\n",
+		get_nprocs_conf(), get_nprocs());
 }
