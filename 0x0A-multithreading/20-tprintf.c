@@ -28,11 +28,17 @@ int tprintf(char const *format, ...)
 	return (ret);
 }
 
+/**
+ * init_mutex - initialize mutex
+ */
 void __attribute__((constructor)) init_mutex(void)
 {
 	pthread_mutex_init(&mutex, NULL);
 }
 
+/**
+ * destroy_mutex - destroy mutex
+ */
 void __attribute__((destructor)) destroy_mutex(void)
 {
 	pthread_mutex_destroy(&mutex);
