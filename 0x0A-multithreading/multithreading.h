@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include <sys/sysinfo.>
+#include <sys/sysinfo.h>
 
 #define THREADS get_nprocs()
 
