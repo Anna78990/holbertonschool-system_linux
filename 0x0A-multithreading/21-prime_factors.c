@@ -33,11 +33,11 @@ list_t *prime_factors(char const *s)
 {
 	unsigned long num = strtoul(s, NULL, 10);
 	list_t *factors = list_init(malloc(sizeof(list_t)));
+	unsigned long divisor = 2;
+	unsigned long *factor;
 
 	if (num < 2)
 		return (factors);
-
-	unsigned long divisor = 2;
 
 	while (num > 1)
 	{
@@ -45,7 +45,7 @@ list_t *prime_factors(char const *s)
 		{
 			if (is_prime(divisor))
 			{
-				unsigned long *factor = malloc(sizeof(unsigned long));
+				factor = malloc(sizeof(unsigned long));
 				*factor = divisor;
 				list_add(factors, factor);
 				num /= divisor;
