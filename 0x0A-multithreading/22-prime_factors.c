@@ -45,14 +45,17 @@ void destroy_task(task_t *task)
  */
 void *exec_tasks(list_t const *tasks)
 {
+	task_t *task;
+	node_t *current;
+
 	if (tasks == NULL)
 		return (NULL);
 
-	node_t *current = tasks->head;
+	current = tasks->head;
 
 	while (current != NULL)
 	{
-		task_t *task = (task_t *)current->content;
+		task = (task_t *)current->content;
 
 		pthread_mutex_lock(&(task->lock));
 
