@@ -10,10 +10,12 @@
  */
 int is_prime(unsigned long n)
 {
+	unsigned long i;
+
 	if (n < 2)
 		return (0);
 
-	for (unsigned long i = 2; i * i <= n; i++)
+	for (i = 2; i * i <= n; i++)
 	{
 		if (n % i == 0)
 			return (0);
