@@ -6,8 +6,8 @@ asm_strncasecmp:
     mov rbp, rsp
     mov rcx, 0
 compare:
-    xor rax, rax
-    xor rbx, rbx
+    mov rax, 0
+    mov rbx, 0
     mov al, byte [rdi + rcx]
     mov bl, byte [rsi + rcx]
     cmp rcx, rdx
@@ -15,7 +15,7 @@ compare:
     cmp al, bl
     je equal
     jl less
-    jg greate
+    jg greater
 equal:
     cmp al, 0
     je exit
@@ -26,7 +26,7 @@ less:
     cmp al, bl
     je equal
     jmp exit
-greate:
+greater:
     add bl, 32
     cmp al, bl
     je equal

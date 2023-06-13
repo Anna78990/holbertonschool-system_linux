@@ -13,7 +13,7 @@ compare:
     cmp al, bl
     je equal
     jl less
-    jg greate
+    jg greater
 equal:
     cmp al, 0
     je exit
@@ -24,7 +24,7 @@ less:
     cmp al, bl
     je equal
     jmp exit
-greate:
+greater:
     add bl, 32
     cmp al, bl
     je equal
