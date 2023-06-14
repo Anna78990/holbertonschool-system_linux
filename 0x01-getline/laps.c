@@ -1,156 +1,52 @@
 #include <stdio.h>
-#include <stddef.h>
+#include <stdlib.h>
 #include "laps.h"
 
 /**
- * race_state - update race state
- * @id: array of id
- * @size: size or the array
- * Return: always Nothing.
+ * race_state - keeps track of the number of laps
+ *		made by several cars in a race
+ * @id: id of car
+ * @size: size of car
  */
-
 void race_state(int *id, size_t size)
 {
-	static listcars_t *cars;
-	listcars_t *head = cars;
+	static Car *cars;
+	static size_t car_count;
+	size_t i, j;
+	int found;
 
-	if (((int)size == 0) && cars)
+	if (size == 0)
 	{
-		while (cars)
-		{
-			head = cars->next;
-			free(cars);
-			cars = head;
-		}
+		free(cars);
+		cars = NULL;
+		car_count = 0;
+		return;
 	}
-	else
+	cars = NULL;
+	car_count = 0;
+
+	for (i = 0; i < size; i++)
 	{
-		if (!cars || !search_carslist(&cars, id, size))
+		found = 0;
+		for (j = 0; j < car_count; j++)
 		{
-			cars = add_car(&cars, id, size);
-			head = cars;
-		}
-		cars = change_state(&cars, id, size);
-		printf("Race state:\n");
-		while (cars)
-		{
-			printf("Car %d [%d laps]\n", cars->id, cars->laps);
-			cars = cars->next;
-		}
-		cars = head;
-	}
-}
-
-
-/**
- * add_car - add_car
- * @cars: car's linked list
- * @list: array of the id list
- * @size: size or the array
- * Return: always Nothing.
- */
-
-listcars_t *add_car(listcars_t **cars, int *list, size_t size)
-{
-	int i;
-	listcars_t *new, *tmp, *head = tmp = *cars;
-
-	for (i = 0; i < (int)size; i++)
-	{
-		new = malloc(sizeof(listcars_t));
-		new->id = list[i];
-		new->laps = -1;
-		new->next = NULL;
-		if (*cars == NULL)
-			*cars = head = new;
-		else
-		{
-			while ((*cars)->next)
+			if (cars[j].id == id[i])
 			{
-				if ((*cars)->id > list[i])
-				{
-					if ((*cars) == tmp)
-					{
-						new->next = *cars;
-						tmp = head = *cars = new;
-						break;
-					}
-					else
-					{
-						tmp->next = new;
-						new->next = *cars;
-						break;
-					}
-				}
-				tmp = *cars;
-				*cars = (*cars)->next;
-			}
-			if (!((*cars)->next) && ((*cars)->id < list[i]))
-				(*cars)->next = new;
-			*cars = head;
-		}
-		printf("Car %d joined the race\n", new->id);
-	}
-	return (*cars);
-}
-
-/**
- * change_state - update race state
- * @cars: cars list
- * @list: array of car id
- * @size: size or the array
- * Return: always Nothing.
- */
-
-listcars_t *change_state(listcars_t **cars, int *list, size_t size)
-{
-	int i;
-	listcars_t *head = *cars;
-
-	for (i = 0; i < (int)size; i++)
-	{
-		while (*cars)
-		{
-			if ((*cars)->id == list[i])
-			{
-				(*cars)->laps += 1;
+				cars[j].laps++;
+				found = 1;
 				break;
 			}
-			*cars = (*cars)->next;
 		}
-		*cars = head;
-	}
-	return (head);
-}
-
-/**
- * search_carslist - search if the car already exist or not
- * @cars: cars list
- * @list: array of car id
- * @size: size or the array
- * Return: 1 or 0
- */
-
-int search_carslist(listcars_t **cars, int *list, size_t size)
-{
-	int i;
-	listcars_t *head = *cars;
-
-	if (!list)
-		return (1);
-	for (i = 0; i < (int)size; i++)
-	{
-		while (*cars)
+		if (!found)
 		{
-			if ((*cars)->id == list[i])
-			{
-				*cars = head;
-				return (1);
-			}
-			else
-				*cars = (*cars)->next;
+			car_count++;
+			cars = realloc(cars, sizeof(Car) * car_count);
+			cars[car_count - 1].id = id[i];
+			cars[car_count - 1].laps = 0;
+			printf("Car %d joined the race\n", id[i]);
 		}
-		*cars = head;
 	}
-	return (0);
+	printf("Race state:\n");
+	for (i = 0; i < car_count; i++)
+		printf("Car %d [%d laps]\n", cars[i].id, cars[i].laps);
 }
