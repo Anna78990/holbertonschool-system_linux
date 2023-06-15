@@ -3,55 +3,66 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <string.h>
+#include "_getline.h"
 
-#define READ_SIZE 1024
+
+char *find_line(read_t reader)
+{
+	int i, j, byte_read = 0;
+	char *line, *tmp, *buf;
+
+	for (i = 0; i < READ_SIZE; i++)
+	{
+		if (reader->buf[i] == '\n')
+		{
+			line = (char *)malloc(sizeof(char) * (i + 1));
+			strncpy(line, reader->buf, i);
+			i += 1;
+			line[i] = '\0';
+			buf = (char *)malloc(sizeof(char) * (reader->size - i + 1));
+			for (j = 0; j + i < reader->size; j++)
+			{
+				buf[j] = reader->buf[i + j];
+			}
+			buf[j + i] = '\0';
+			free(reader->buf);
+			reader->buf = buf;
+			reader->size -= i;
+			return (tmp);
+		}
+	}
+	tmp = reader->buf;
+	free(reader->buf);
+	reader->buf = 
+
+}
+
 
 char *_getline(const int fd)
 {
-    static char buffer[READ_SIZE];
-    static ssize_t bytes_read = 0;
-    static ssize_t current_pos = 0;
-    static ssize_t line_length = 0;
+	static read_t *reader;
+	static char buffer;
+	static ssize_t bytes_read = 0;
+	static ssize_t current_pos = 0;
+	static ssize_t line_length = 0;
+	char *line = NULL;
+	ssize_t i = 0;
 
-    char *line = NULL;
-    ssize_t i = 0;
+	if (fd < 0)
+		return (NULL);
 
-    if (fd < 0 || bytes_read == -1)
-        return NULL;
+	if (reader != NULL || reader->fd != fd)
+	{
+		reader->fd = fd;
+		reader = (read_t *)malloc(sizeof(read_t));
+		if (reader == NULL)
+			return (NULL);
+		buffer = (char *)malloc(sizeof(char) * READ_SIZE);
+		if (buffer == NULL)
+			return (NULL);
+		reader->size = read(fd, buffer, READ_SIZE);
+		reader->buf = buffer;
+	}
+	
 
-    while (1)
-    {
-        if (current_pos >= bytes_read)
-        {
-            current_pos = 0;
-            bytes_read = read(fd, buffer, READ_SIZE);
-            if (bytes_read == 0)
-                return line;
-            if (bytes_read == -1)
-                return NULL;
-        }
-
-        if (i >= line_length)
-        {
-            char *temp = realloc(line, (line_length + READ_SIZE) * sizeof(char));
-            if (temp == NULL)
-            {
-                free(line);
-                return NULL;
-            }
-            line = temp;
-            line_length += READ_SIZE;
-        }
-
-        if (buffer[current_pos] == '\n')
-        {
-            line[i] = '\0';
-            current_pos++;
-            return line;
-        }
-
-        line[i] = buffer[current_pos];
-        i++;
-        current_pos++;
-    }
-}

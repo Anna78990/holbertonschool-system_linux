@@ -7,7 +7,7 @@
 int main()
 {
 	int fd, sz;
-	char *buf, *b;
+	char *buf, *b, *tmp;
 
 	buf = (char *)malloc(sizeof(char) * 20);
 	b = (char *)malloc(sizeof(char) * 20);
@@ -33,7 +33,11 @@ int main()
 	printf("%d\n", sz);
 	printf("Those bytes are as follows 1: %s\n", buf);
 	printf("Those bytes are as follows 2: %s\n", b);
-	printf("1ST CHAR IS '%c'", b[0]);
+	printf("1ST CHAR IS '%c'\n", b[0]);
+	tmp = (char *)malloc(sizeof(char) * 2);
+	strncpy(tmp, buf, 2);
+	free(buf);
+	printf("%s", tmp);
 	return 0;
 }
 
