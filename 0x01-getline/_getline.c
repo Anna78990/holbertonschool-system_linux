@@ -15,28 +15,24 @@ char *find_line(read_t *reader)
 
 	for (i = 0; i < reader->size; i++)
 	{
-		printf("%d", i);
-		if (reader->buf[i] == '\0')
-			break;
 		if (reader->buf[i] == '\n')
 		{
-			line = (char *)malloc(sizeof(char) * (i + 1));
+			line = (char *)malloc(sizeof(char) * i);
 			strncpy(line, reader->buf, i);
-			i += 1;
 			line[i] = '\0';
-			buf = (char *)malloc(sizeof(char) * (reader->size - i + 1));
+			buf = (char *)malloc(sizeof(char) * (reader->size - i));
+			i += 1;
 			for (j = 0; j + i < reader->size; j++)
-			{
 				buf[j] = reader->buf[i + j];
-			}
-			buf[j] = '\0';
 			free(reader->buf);
-			reader->buf = buf;
+			reader->buf = (char *)malloc(sizeof(char) * (reader->size - i));
+			strcpy(reader->buf, buf);
+			reader->buf[j] = '\0';
 			reader->size = j;
 			return (line);
 		}
 	}
-	tmp = (char *)malloc(sizeof(char) * reader->size + 1);
+	tmp = (char *)malloc(sizeof(char) * reader->size);
 	strcpy(tmp, reader->buf);
 	tmp[reader->size] = '\0';
 	free(reader->buf);
@@ -60,7 +56,6 @@ char *_getline(const int fd)
 {
 	static read_t *reader;
 	char *buffer;
-	int s;
 
 	if (fd < 0)
 		return (NULL);
@@ -71,19 +66,11 @@ char *_getline(const int fd)
 		if (reader == NULL)
 			return (NULL);
 		reader->fd = fd;
-		buffer = (char *)malloc(sizeof(char) * (READ_SIZE + 1));
-		if (buffer == NULL)
+		reader->buf = (char *)malloc(sizeof(char) * (READ_SIZE + 1));
+		if (reader->buf == NULL)
 			return (NULL);
-		reader->size = read(fd, buffer, READ_SIZE);
-		buffer[READ_SIZE] = '\0';
-		printf("***** reader->size = %d *****\n", reader->size);
-		for (s = 0; buffer[s]; s++)
-			;
-		printf("***** s is %d *******\n", s);
-		printf("***** reader->buf is %s *******\n", buffer);
-		printf("***** reader->buf[79] is %c *******\n", buffer[79]);
-		printf("***** reader->buf[80] is %c *******\n", buffer[80]);
-		reader->buf = buffer;
+		reader->size = read(fd, reader->buf, READ_SIZE);
+		reader->buf[READ_SIZE] = '\0';
 	}
 	else if (reader->fd != fd)
 	{
