@@ -15,7 +15,7 @@ typedef struct read_s
 {
 	int fd;
 	char *buf;
-	int bytes;
+	int size;
 } read_t;
 
 char *_getline(const int fd);
