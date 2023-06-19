@@ -16,6 +16,7 @@ typedef struct read_s
 	int fd;
 	char *buf;
 	int size;
+	struct read_s *next;
 } read_t;
 
 char *_getline(const int fd);

@@ -8,8 +8,7 @@
 
 int main(void)
 {
-	char *d;
+	int i = 0;
 
-	d = (char *)malloc(sizeof(char) * 0);
-	printf("%s\n", d);
+	printf("%d\n", i);
 }
