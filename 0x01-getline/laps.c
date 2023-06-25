@@ -4,11 +4,11 @@
 
 
 /**
- * sort - sort given array
+ * _sort - sort given array
  * @arr: array to sort
  * @size: size of array
  */
-void sort(int *arr, int size)
+void _sort(int *arr, int size)
 {
 	int swap, swapped;
 
@@ -40,7 +40,7 @@ void race_state(int *id, size_t size)
 
 	if (!id)
 		return;
-	sort(id, size);
+	_sort(id, size);
 	if (((int)size == 0) && cars)
 	{
 		while (cars)
