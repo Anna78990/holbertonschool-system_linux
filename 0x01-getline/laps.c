@@ -23,7 +23,7 @@ void race_state(int *id, size_t size)
 			free(cars_list);
 			cars_list = head;
 		}
-		free(cars);
+		return;
 	}
 	else
 	{
