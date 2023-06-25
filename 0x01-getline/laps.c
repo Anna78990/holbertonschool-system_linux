@@ -2,18 +2,45 @@
 #include <stddef.h>
 #include "laps.h"
 
+
+/**
+ * sort - sort given array
+ * @arr: array to sort
+ * @size: size of array
+ */
+void sort(int *arr, int size)
+{
+	int swap, swapped;
+
+	for (int i = 0; i < size - 1; i++)
+	{
+		for (int j = 0; j < size - i - 1; j++)
+		{
+			if (arr[j] > arr[j + 1])
+			{
+				swap = arr[j];
+				swapped = arr[j + 1];
+				arr[j] = swapped;
+				arr[j + 1] = swap;
+			}
+		}
+	}
+}
+
 /**
  * race_state - update race state
  * @id: array of id
  * @size: size or the array
  * Return: always Nothing.
  */
-
 void race_state(int *id, size_t size)
 {
 	static listcars_t *cars;
 	listcars_t *head = cars;
 
+	if (!id)
+		return;
+	sort(id, size);
 	if (((int)size == 0) && cars)
 	{
 		while (cars)

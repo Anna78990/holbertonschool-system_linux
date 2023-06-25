@@ -19,11 +19,6 @@ typedef struct listcars_s
 	struct listcars_s *next;
 } listcars_t;
 
-typedef struct
-{
-	int id;
-	int laps;
-} Car;
 
 void race_state(int *id, size_t size);
 listcars_t *add_car(listcars_t **cars, int *list, size_t size);
