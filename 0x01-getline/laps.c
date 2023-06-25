@@ -10,25 +10,26 @@
  */
 void race_state(int *id, size_t size)
 {
+	static listcars_t *cars_list;
 	static listcars_t *cars;
 	listcars_t *head = cars;
 
-	if (!id)
-		return;
-	if (((int)size == 0) && cars)
+	if ((int)size == 0)
 	{
-		while (cars)
+		cars = cars_list;
+		while (cars_list)
 		{
-			head = cars->next;
-			free(cars);
-			cars = head;
+			head = cars_list->next;
+			free(cars_list);
+			cars_list = head;
 		}
+		free(cars);
 	}
 	else
 	{
 		if (!cars || !search_carslist(&cars, id, size))
 		{
-			cars = add_car(&cars, id, size);
+			cars_list = cars = add_car(&cars, id, size);
 			head = cars;
 		}
 		cars = change_state(&cars, id, size);
