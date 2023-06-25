@@ -58,23 +58,15 @@ listcars_t *add_car(listcars_t **cars, int *list, size_t size)
 
 	for (i = 0; i < (int)size; i++)
 	{
-		if (*cars)
-			printf("in this iteration, cars->id is %d\n", (*cars)->id);
 		new = malloc(sizeof(listcars_t));
 		new->id = list[i], new->laps = -1, new->next = NULL;
 		if (*cars == NULL)
-		{
-			printf("im in if\n");
-			*cars = new;
-			head = new;
-		}
+			*cars = head = new;
 		else
 		{
-			printf("im in else\n");
 			tmp = head = *cars;
 			while (*cars)
 			{
-				printf("im in while, cars->id is %d\n", (*cars)->id);
 				if ((*cars)->id > list[i])
 				{
 					if ((*cars) == tmp)
@@ -91,15 +83,11 @@ listcars_t *add_car(listcars_t **cars, int *list, size_t size)
 						break;
 					}
 				}
-				tmp = *cars;
-				*cars = (*cars)->next;
+				tmp = *cars, *cars = (*cars)->next;
 			}
-			if (tmp)
-				printf("tmp id is %d\n", tmp->id);
 			if ((*cars) == NULL)
 			{
 				tmp->next = new;
-				printf("cars is NULL\n");
 			}
 		}
 		printf("Car %d joined the race\n", new->id);
