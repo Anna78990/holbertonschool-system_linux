@@ -20,5 +20,6 @@ typedef struct read_s
 } read_t;
 
 char *_getline(const int fd);
+char *find_line(read_t *rd);
 
 #endif

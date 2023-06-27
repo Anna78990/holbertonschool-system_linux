@@ -1,123 +1,110 @@
-#include <unistd.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <string.h>
 #include "_getline.h"
-
+#include <string.h>
 #include <stdio.h>
-
-static int test = 0;
-
-void free_readers(read_t *reader)
-{
-	read_t *tmp;
-
-	while (reader)
-	{
-		tmp = reader;
-		reader = reader->next;
-		free(tmp->buf);
-		free(tmp);
-	}
-}
-
-char *find_line(read_t *reader)
-{
-	int i, j, size;
-	char *line, *tmp, *buf;
-	read_t *reads = malloc(sizeof(read_t));
-
-	for (i = 0; i < reader->size; i++)
-	{
-		if (reader->buf[i] == '\n')
-		{
-			line = (char *)malloc(sizeof(char) * i);
-			strncpy(line, reader->buf, i);
-			line[i] = '\0';
-			reads->buf = (char *)malloc(sizeof(char) * (reader->size - i));
-			i += 1;
-			for (j = 0; j + i < reader->size; j++)
-				reads->buf[j] = reader->buf[i + j];
-			reads->buf[j] = '\0';
-			reader->buf = line;
-			reads->size = j;
-			reads->next = reader, reader = reads;
-			printf("reader->buf is %s\n", reader->buf);
-			printf("reads->buf is %s\n", reads->buf);
-			return (line);
-		}
-	}
-	tmp = (char *)malloc(sizeof(char) * reader->size);
-	strcpy(tmp, reader->buf);
-	tmp[reader->size] = '\0';
-	size = reader->size;
-	buf = (char *)malloc(sizeof(char) * READ_SIZE);
-	reads->size = read(reader->fd, buf, READ_SIZE);
-	
-	buf[reader->size] = '\0';
-	tmp = (char *) realloc(tmp, sizeof(char) * (reader->size + size));
-	strcat(tmp, buf);
-	free(buf);
-	reads->buf = tmp;
-	reads->next = reader, reader = reads;
-	if (reads->buf == NULL)
-		return (NULL);
-	return (find_line(reader));
-}
+#include <stdlib.h>
+#include <unistd.h>
 
 
+/**
+ * _getline - Return a line in fd
+ * @fd: file descriptor
+ *
+ * Return: line of fd or NULL if error
+ */
 char *_getline(const int fd)
 {
-	static read_t *reader, *r;
-	char *tmp;
+	static read_t *readers;
+	read_t *rd;
+	char *bytes;
+	int bytes_read;
 
-	
-	if (fd < 0)
-		return (NULL);
-
-	printf("%d\n", test);
-	test += 1;
-	if (reader)
+	if (fd == -1)
 	{
-		printf("reader->buf: %s, size->%d, next->%p\n", reader->buf, reader->size, reader->next);
-		if (reader->next)
-		{	
-			r = reader->next;
-			printf("reader->buf: %s, size->%d, next->%p\n", r->buf, r->size, r->next);
+		printf("-----now fd is -1----\n");
+		for (rd = readers; rd; rd = readers)
+		{
+			printf("rd->buf is %s", rd->buf);
+			readers = rd->next;
+			free(rd->buf);
+			free(rd);
+		}
+		return (NULL);
+	}
+
+	for (rd = readers; rd; rd = rd->next)
+	{
+		if (rd->fd == fd)
+		{
+			if (rd->bytes <= 0)
+				rd->bytes = read(fd, rd->buf, READ_SIZE);
+			return (find_line(rd));
 		}
 	}
-	if (reader == NULL)
+	bytes = malloc(sizeof(char) * READ_SIZE);
+	bytes_read = read(fd, bytes, READ_SIZE);
+	if (bytes_read <= 0)
 	{
-		reader = (read_t *)malloc(sizeof(read_t));
-		if (reader == NULL)
-			return (NULL);
-		reader->fd = fd;
-		reader->buf = (char *)malloc(sizeof(char) * (READ_SIZE));
-		if (reader->buf == NULL)
-			return (NULL);
-		reader->size = read(fd, reader->buf, READ_SIZE);
-		reader->buf[READ_SIZE] = '\0';
-		reader->next = reader;
+		free(bytes);
+		return (NULL);
 	}
-	else if (reader->fd != fd)
+	rd = malloc(sizeof(read_t));
+	if (rd == NULL)
+		return (NULL);
+	rd->fd = fd;
+	rd->buf = bytes;
+	rd->bytes = bytes_read;
+	rd->next = readers;
+	readers = rd;
+	return (find_line(rd));
+}
+
+/**
+ * find_line - search line in linked list
+ * @rd: node of readder_t
+ *
+ * Return: a String if error NULL
+ */
+char *find_line(read_t *rd)
+{
+	int i, j, line_size = 0, bytes_copied = 0, loop = 0;
+	char *line = NULL, *tmp;
+
+	while (rd->bytes > 0)
 	{
-		reader = (read_t *)malloc(sizeof(read_t));
-		if (reader == NULL)
-			return (NULL);
-		reader->fd = fd;
-		reader->buf = (char *)malloc(sizeof(char) * (READ_SIZE));
-		if (reader->buf == NULL)
-			return (NULL);
-		reader->size = read(fd, reader->buf, READ_SIZE);
-		reader->buf[READ_SIZE] = '\0';
-		reader->next = reader;
+		loop += 1;
+		printf("now %dth loop, line_size->%d, bytes_copied->%d\n",
+				loop, line_size, bytes_copied);
+
+		if (line_size < bytes_copied + rd->bytes + 1)
+		{
+			line_size += rd->bytes + 1, tmp = malloc(sizeof(char) * line_size);
+			if (tmp == NULL)
+			{
+				free(line);
+				return (NULL);
+			}
+			memcpy(tmp, line, bytes_copied);
+			memset(tmp + bytes_copied, '\0', line_size - bytes_copied);
+			free(line), line = tmp;
+		}
+
+		for (i = 0; i < rd->bytes; i++)
+		{
+			if (rd->buf[i] == '\n')
+			{
+				rd->buf[i++] = '\0', rd->bytes -= i;
+				memcpy(line + bytes_copied, rd->buf, i);
+				for (j = 0; i < READ_SIZE; j++, i++)
+					rd->buf[j] = rd->buf[i];
+				for (; j < READ_SIZE; j++)
+					rd->buf[j] = '\0';
+				return (line);
+			}
+		}
+		memcpy(line + bytes_copied, rd->buf, rd->bytes);
+		bytes_copied += rd->bytes;
+		rd->bytes = read(rd->fd, rd->buf, READ_SIZE);
 	}
-	tmp = find_line(reader);
-	if (tmp)
-		return (tmp);
-	else
-		free_readers(reader);
-	return (NULL);
+	printf("now rd->buf is %s\n", rd->buf);
+	return (line);
 }
