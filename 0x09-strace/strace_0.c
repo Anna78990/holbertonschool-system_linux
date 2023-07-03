@@ -1,47 +1,103 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+#include "strace.h"
 
+#include "strace.h"
+
+/**
+ * trace_syscall - Start or stop the process at the next entry or exit from a system call.
+ * @pid: Process ID to trace.
+ *
+ * Return: 1 if the process is stopped by a signal, 0 if the process has exited.
+ */
+int trace_syscall(pid_t pid)
+{
+	int status;
+
+	while (1)
+	{
+		ptrace(PTRACE_SYSCALL, pid, NULL, NULL);
+		waitpid(pid, &status, 0);
+		if (WIFSTOPPED(status) && WSTOPSIG(status) & 0x80)
+			return 1;
+		if (WIFEXITED(status))
+			return 0;
+	}
+}
+
+/**
+ * validate_args - Check for usage errors.
+ * @argc: Number of command-line arguments.
+ * @argv: Pointer to an array of character strings that contain the arguments.
+ *
+ * Return: 0 on success, 1 on error.
+ */
+int validate_args(int argc, char *argv[])
+{
+	struct stat sb;
+
+	if (argc < 2)
+	{
+		fprintf(stderr, "%s command [args...]\n", *argv);
+		return 1;
+	}
+	if (stat(argv[1], &sb) == -1)
+	{
+		fprintf(stderr, "%s: Can't stat '%s': No such file or directory\n",
+				*argv, argv[1]);
+		return 1;
+	}
+	return 0;
+}
+
+
+/**
+ * main - Entry point.
+ * @argc: Number of command-line arguments.
+ * @argv: Pointer to an array of character strings that contain the arguments.
+ *
+ * Return: 0 on success, 1 on failure.
+ */
 int main(int argc, char *argv[])
 {
-    pid_t pid;
-    int i;
-    char **strace_args = malloc((argc + 3) * sizeof(char *));
+    pid_t child_pid, parent_pid;
 
-    if (argc < 2)
-    {
-        printf("Usage: ./strace_0 command [args...]\n");
+    if (validate_args(argc, argv))
         return 1;
-    }
 
-    pid = fork();
+    parent_pid = getpid();
+    child_pid = fork();
 
-    if (pid == -1)
+    if (child_pid == -1)
     {
         perror("fork");
         return 1;
     }
-    else if (pid == 0)
+    else if (child_pid == 0)
     {
-        strace_args[0] = "strace";
-        strace_args[1] = "-f";
-        for (i = 1; i < argc; i++)
+        if (ptrace(PTRACE_TRACEME) == -1)
         {
-            strace_args[i + 1] = argv[i];
+            perror("ptrace");
+            return 1;
         }
-        strace_args[argc + 1] = NULL;
 
-        execvp("strace", strace_args);
-        perror("execvp");
-        exit(1);
+        kill(parent_pid, SIGSTOP);
+
+        return execvp(argv[1], argv + 1);
     }
     else
     {
-        int status;
-        waitpid(pid, &status, 0);
+	    int status;
+ 
+ 	    setbuf(stdout, NULL);
+            waitpid(child_pid, &status, 0);
+            ptrace(PTRACE_SETOPTIONS, child_pid, 0, PTRACE_O_TRACESYSGOOD);
+            while (1)
+            {
+                 if (!trace_syscall(child_pid))
+                     break;
+                 printf("%li\n", ptrace(PTRACE_PEEKUSER, child_pid, sizeof(long) * ORIG_RAX));
+                 if (!trace_syscall(child_pid))
+                     break;
+            }
+        return 0;
     }
-
-    return 0;
 }
