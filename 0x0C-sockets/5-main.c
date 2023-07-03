@@ -118,9 +118,7 @@ void handle_client(int client_socket)
 		print_queries(queries);
 	free(path);
 	free(queries);
-	response = "HTTP/1.1 200 OK\r\n"
-		"Content-Length: 0\r\n"
-		"Connection: close\r\n\r\n";
+	response = "HTTP/1.1 200 OK\r\n";
 	write(client_socket, response, strlen(response));
 	close(client_socket);
 }
