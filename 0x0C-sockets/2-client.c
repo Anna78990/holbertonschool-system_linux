@@ -6,6 +6,7 @@
 
 /**
  * main - opens an IPv4/TCP socket, and listens to traffic on port 12345
+ * @argc: number of arg
  * @argv: ip adress and port
  * Return: exit status
  */
