@@ -118,7 +118,8 @@ void handle_client(int client_socket)
 		print_queries(queries);
 	free(path);
 	free(queries);
-	response = "HTTP/1.1 200 OK\r\n";
+	response = "HTTP/1.1 200 OK\r\n"
+		"\r\n";
 	write(client_socket, response, strlen(response));
 	close(client_socket);
 }
