@@ -58,7 +58,8 @@ void handle_request(int client_fd)
 	char **rr;
 	int i;
 
-	while ((num_bytes = recv(client_fd, buffer, BUFFER_SIZE - 1, 0)) > 0)
+	num_bytes = recv(client_fd, buffer, BUFFER_SIZE - 1, 0);
+	if (num_bytes > 0)
 	{
 		buffer[num_bytes] = '\0';
 		rr = handle_rawrequest(buffer);
@@ -70,7 +71,7 @@ void handle_request(int client_fd)
 		response = "HTTP/1.1 200 OK\r\n\r\n";
 		write(client_fd, response, strlen(response));
 	}
-	if (num_bytes < 0)
+	else
 	{
 		perror("receive failed");
 		exit(EXIT_FAILURE);
