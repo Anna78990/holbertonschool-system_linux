@@ -39,7 +39,7 @@ char **handle_rawrequest(char *buffer)
 	needle = strstr(a, "Accept: ");
 	if (needle)
 		rr[5] = strdup(a + 8);
-	printf("raw-request: \"%s %s %s\n", rr[0], rr[1], rr[2]);
+	printf("Raw-request: \"%s %s %s\n", rr[0], rr[1], rr[2]);
 	printf("User-Agent: %s\nHost: %s\nAccept: %s\n\n\"\n", rr[4], rr[3],
 			rr[5]);
 	return (rr);
