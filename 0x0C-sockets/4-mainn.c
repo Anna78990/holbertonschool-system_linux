@@ -116,13 +116,11 @@ int main(void)
 		client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &addr_len);
 		if (client_fd < 0)
 			perror("accept failed"), exit(EXIT_FAILURE);
-		printf("client_fd is %d\n", client_fd);
 		client_ip = (char *)malloc(sizeof(char) * INET_ADDRSTRLEN);
 		inet_ntop(AF_INET, &(client_addr.sin_addr), client_ip, INET_ADDRSTRLEN);
 		printf("Client connected: %s\n", client_ip);
 		free(client_ip);
 		handle_request(client_fd);
-		fflush(stdout);
 	}
 	close(server_fd);
 	return (EXIT_SUCCESS);
