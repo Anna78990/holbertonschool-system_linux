@@ -1,5 +1,4 @@
 Server listening on port 8080
-client_fd is 4
 Client connected: 127.0.0.1
 Raw-request: "GET / HTTP/1.1
 User-Agent: curl/7.68.0
@@ -10,7 +9,6 @@ Accept: */*
 Method: GET
 Path: /
 Version: HTTP/1.1
-client_fd is 4
 Client connected: 127.0.0.1
 Raw-request: "POST /holberton_school HTTP/1.1
 User-Agent: curl/7.68.0
@@ -21,7 +19,6 @@ Accept: */*
 Method: POST
 Path: /holberton_school
 Version: HTTP/1.1
-client_fd is 4
 Client connected: 127.0.0.1
 Raw-request: "HEAD /holberton/school HTTP/1.1
 User-Agent: curl/7.68.0
