@@ -129,7 +129,7 @@ void handle_client(int client_socket)
 	free(queries);
 	response = "HTTP/1.1 200 OK\r\n"
 		"\r\n";
-	write(client_socket, response, strlen(response));
+	send(client_socket, response, strlen(response), 0);
 	close(client_socket);
 }
 
