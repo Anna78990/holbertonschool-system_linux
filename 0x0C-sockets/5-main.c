@@ -9,95 +9,14 @@
 #define BUFFER_SIZE 1024
 
 /**
- * print_queries - print queries
- * @queries: double pointer to query array
- */
-void print_queries(char **queries)
-{
-	int i = 0;
-	char *tok, *tok2;
-
-	while (queries[i])
-	{
-		tok = strtok(queries[i], "=");
-		tok2 = strtok(NULL, "\0");
-		printf("Query: \"%s\" -> \"%s\"\n", tok, tok2);
-		i++;
-	}
-}
-
-/**
- * get_query - create array of query
- * @path: path to refer
- * Return: array of query
- */
-char **get_query(char *path)
-{
-	char **query = NULL;
-	char *path_dup, *token, *space;
-	int count = 0, i;
-
-	if (path == NULL)
-		return (NULL);
-	path_dup = strdup(path);
-	token = strtok(path_dup, "&");
-	while (token)
-	{
-		query = realloc(query, sizeof(char *) * (count + 1));
-		space = strchr(token, ' ');
-		if (space)
-		{
-			query[count] = (char *)malloc(sizeof(char) *
-					(space - token + 1));
-			for (i = 0; i < space - token; i++)
-				query[count][i] = token[i];
-		}
-		else
-			query[count] = strdup(token);
-		count++;
-		token = strtok(NULL, "&");
-	}
-
-	query = realloc(query, sizeof(char *) * (count + 1));
-	query[count] = NULL;
-
-	free(path_dup);
-	return (query);
-}
-
-/**
- * get_path - find path
- * @path: chain of character to refer
- * Return: path
- */
-char *get_path(const char *path)
-{
-	char *found, *dom = NULL;
-	int i, diff;
-
-	if (path[0] == '/')
-	{
-		found = strchr(path, '?');
-		diff = found - path;
-		dom = (char *)malloc(sizeof(char) * diff + 1);
-		for (i = 0; i < diff; i++)
-			dom[i] = path[i];
-		dom[i] = '\0';
-	}
-	return (dom);
-}
-
-/**
  * handle_client - print the information of client socket
  * @client_socket: socket number to refer
  */
 void handle_client(int client_socket)
 {
-	char buffer[BUFFER_SIZE], buf[BUFFER_SIZE];
+	char buffer[BUFFER_SIZE];
 	ssize_t bytes_received;
-	char *path, *q_start, *q_end;
-	char **queries;
-	int i;
+	char *path, *query, *key, *value, *next, *rest;
 	const char *response;
 
 	bytes_received = recv(client_socket, buffer, BUFFER_SIZE - 1, 0);
@@ -109,26 +28,19 @@ void handle_client(int client_socket)
 	}
 	buffer[bytes_received] = '\0';
 	printf("Raw request: \"%s\"\n", buffer);
-	path = get_path(buffer + 4);
-	q_start = strchr(buffer, '?');
-	q_end = strstr(q_start, " HTTP");
-	for (i = 0; i < q_end - q_start; i++)
+	strtok(buffer, " ");
+	path = strtok(NULL, " ");
+	path = strtok_r(path, "?", &next);
+	printf("Path: %s\n", path);
+	query = strtok_r(NULL, "&", &next);
+	while (query)
 	{
-		if (i == 0 && q_start[i] != '?')
-			break;
-		else if (i > 0)
-			buf[i - 1] = q_start[i];
+		key = strtok_r(query, "=", &rest);
+		value = strtok_r(NULL, "=", &rest);
+		printf("Query: \"%s\" -> \"%s\"\n", key, value);
+		query = strtok_r(NULL, "&", &next);
 	}
-	buf[i] = '\0';
-	queries = get_query(buf);
-	if (path)
-		printf("Path: %s\n", path);
-	if (queries)
-		print_queries(queries);
-	free(path);
-	free(queries);
-	response = "HTTP/1.1 200 OK\r\n"
-		"\r\n";
+	response = "HTTP/1.1 200 OK\r\n\r\n";
 	send(client_socket, response, strlen(response), 0);
 	close(client_socket);
 }
