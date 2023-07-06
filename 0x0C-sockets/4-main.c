@@ -69,7 +69,7 @@ void handle_request(int client_fd)
 		for (i = 5; i <= 0; i--)
 			free(rr[i]);
 		response = "HTTP/1.1 200 OK\r\n\r\n";
-		write(client_fd, response, strlen(response));
+		send(client_fd, response, strlen(response), 0);
 	}
 	else
 	{
@@ -78,6 +78,7 @@ void handle_request(int client_fd)
 	}
 	close(client_fd);
 }
+
 
 /**
  * main - opens an IPv4/TCP socket, and listens to traffic on port 8080
@@ -91,6 +92,7 @@ int main(void)
 	socklen_t addr_len = sizeof(client_addr);
 	char *client_ip;
 
+	setbuf(stdout, NULL);
 	server_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_fd < 0)
 	{
@@ -105,7 +107,7 @@ int main(void)
 		perror("bind failed");
 		exit(EXIT_FAILURE);
 	}
-	if (listen(server_fd, 1) < 0)
+	if (listen(server_fd, 10) < 0)
 	{
 		perror("listen failed");
 		exit(EXIT_FAILURE);
@@ -121,8 +123,7 @@ int main(void)
 		printf("Client connected: %s\n", client_ip);
 		free(client_ip);
 		handle_request(client_fd);
-		fflush(stdout);
 	}
 	close(server_fd);
-	return (EXIT_SUCCESS);
+	return (0);
 }
