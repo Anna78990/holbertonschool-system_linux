@@ -34,8 +34,8 @@ void print_queries(char **queries)
 char **get_query(char *path)
 {
 	char **query = NULL;
-	char *path_dup, *token;
-	int count = 0;
+	char *path_dup, *token, *space;
+	int count = 0, i;
 
 	if (path == NULL)
 		return (NULL);
@@ -44,7 +44,17 @@ char **get_query(char *path)
 	while (token)
 	{
 		query = realloc(query, sizeof(char *) * (count + 1));
-		query[count] = strdup(token);
+		space = strchr(token, ' ');
+		if (space)
+		{
+			query[count] = (char *)malloc(sizeof(char) *
+					(space - token + 1));
+			for (i = 0; i < space - token; i++)
+				query[count][i] = token[i];
+			query[count][i] = 0;
+		}
+		else
+			query[count] = strdup(token);
 		count++;
 		token = strtok(NULL, "&");
 	}
@@ -91,7 +101,7 @@ void handle_client(int client_socket)
 	int i;
 	const char *response;
 
-	bytes_received = read(client_socket, buffer, BUFFER_SIZE - 1);
+	bytes_received = recv(client_socket, buffer, BUFFER_SIZE - 1, 0);
 	if (bytes_received < 0)
 	{
 		perror("Error reading from socket");
@@ -136,6 +146,7 @@ int main(void)
 	socklen_t client_len;
 	char *client_ip;
 
+	setbuf(stdout, NULL);
 	server_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_socket < 0)
 	{

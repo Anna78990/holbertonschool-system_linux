@@ -1,31 +1,32 @@
 Server listening on port 8080
 Client connected: 127.0.0.1
-Raw request: "GET / HTTP/1.1
+Raw request: "GET /?holberton=school HTTP/1.1
 Host: localhost:8080
 User-Agent: curl/7.68.0
 Accept: */*
 
 "
-Method: GET
 Path: /
-Version: HTTP/1.1
+Query: "holberton" -> "school"
 Client connected: 127.0.0.1
-Raw request: "POST /holberton_school HTTP/1.1
+Raw request: "GET /brief?holberton=school&street=972_Mission HTTP/1.1
 Host: localhost:8080
 User-Agent: curl/7.68.0
 Accept: */*
 
 "
-Method: POST
-Path: /holberton_school
-Version: HTTP/1.1
+Path: /brief
+Query: "holberton" -> "school"
+Query: "street" -> "972_Missionù"
 Client connected: 127.0.0.1
-Raw request: "HEAD /holberton/school HTTP/1.1
+Raw request: "GET /description/full/?holberton=school&street=972_Mission&upfront_tuition=NaN&duration=2Years HTTP/1.1
 Host: localhost:8080
 User-Agent: curl/7.68.0
 Accept: */*
 
 "
-Method: HEAD
-Path: /holberton/school
-Version: HTTP/1.1
+Path: /description/full/
+Query: "holberton" -> "school"
+Query: "street" -> "972_Mission"
+Query: "upfront_tuition" -> "NaN"
+Query: "duration" -> "2Years"

@@ -17,6 +17,6 @@ function http_req
 (timeout --preserve-status 5s "$1" > todo_api_output 2>&1 &)
 sleep 1
 
-http_req GET /
-http_req POST /holberton_school
-http_req HEAD /holberton/school
+http_req GET /?holberton=school
+http_req GET /brief?holberton=school'&'street=972_Mission
+http_req GET /description/full/?holberton=school'&'street=972_Mission'&'upfront_tuition=NaN'&'duration=2Years
