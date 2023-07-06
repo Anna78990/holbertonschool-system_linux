@@ -9,41 +9,6 @@
 #define PORT 8080
 #define BUFFER_SIZE 1024
 
-/**
- * handle_rawrequest - return rawrequest in correct order
- * @buffer: buffer to convert
- * Return: array of string
- */
-char **handle_rawrequest(char *buffer)
-{
-	char **rr = malloc(sizeof(char *) * 6);
-	char *m, *p, *v, *h, *ua, *a, *needle;
-
-	m = strtok(buffer, " ");
-	rr[0] = strdup(m);
-	p = strtok(NULL, " ");
-	rr[1] = strdup(p);
-	v = strtok(NULL, "\r\n");
-	rr[2] = strdup(v);
-	h = strtok(NULL, "\r\n");
-	needle = strstr(h, "Host: ");
-	if (needle)
-		rr[3] = strdup(h + 6);
-	needle = NULL;
-	ua = strtok(NULL, "\r\n");
-	needle = strstr(ua, "User-Agent: ");
-	if (needle)
-		rr[4] = strdup(ua + 12);
-	needle = NULL;
-	a = strtok(NULL, "\r\n");
-	needle = strstr(a, "Accept: ");
-	if (needle)
-		rr[5] = strdup(a + 8);
-	printf("Raw-request: \"%s %s %s\n", rr[0], rr[1], rr[2]);
-	printf("User-Agent: %s\nHost: %s\nAccept: %s\n\n\"\n", rr[4], rr[3],
-			rr[5]);
-	return (rr);
-}
 
 /**
  * handle_request - handle request
@@ -52,22 +17,21 @@ char **handle_rawrequest(char *buffer)
  */
 void handle_request(int client_fd)
 {
-	char buffer[BUFFER_SIZE];
+	char buffer[BUFFER_SIZE], *method, *path, *version;
 	ssize_t num_bytes;
 	const char *response;
-	char **rr;
-	int i;
 
 	num_bytes = recv(client_fd, buffer, BUFFER_SIZE - 1, 0);
 	if (num_bytes > 0)
 	{
 		buffer[num_bytes] = '\0';
-		rr = handle_rawrequest(buffer);
-		printf("Method: %s\n", rr[0]);
-		printf("Path: %s\n", rr[1]);
-		printf("Version: %s\n", rr[2]);
-		for (i = 5; i <= 0; i--)
-			free(rr[i]);
+		printf("Raw request: \"%s\"\n", buffer);
+		method = strtok(buffer, " ");
+		path = strtok(NULL, " ");
+		version = strtok(NULL, "\r\n");
+		printf("Method: %s\n", method);
+		printf("Path: %s\n", path);
+		printf("Version: %s\n", version);
 		response = "HTTP/1.1 200 OK\r\n\r\n";
 		send(client_fd, response, strlen(response), 0);
 	}
