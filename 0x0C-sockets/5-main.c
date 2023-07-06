@@ -162,7 +162,7 @@ int main(void)
 		perror("Error binding");
 		exit(EXIT_FAILURE);
 	}
-	if (listen(server_socket, 5) < 0)
+	if (listen(server_socket, 10) < 0)
 		perror("Error listening"), exit(EXIT_FAILURE);
 	printf("Server listening on port 8080\n");
 	while (1)
