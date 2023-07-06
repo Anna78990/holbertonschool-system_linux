@@ -51,7 +51,6 @@ char **get_query(char *path)
 					(space - token + 1));
 			for (i = 0; i < space - token; i++)
 				query[count][i] = token[i];
-			query[count][i] = 0;
 		}
 		else
 			query[count] = strdup(token);

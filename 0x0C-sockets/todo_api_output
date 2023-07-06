@@ -7,7 +7,7 @@ Accept: */*
 
 "
 Path: /
-Query: "holberton" -> "school"
+Query: "holberton" -> "school"
 Client connected: 127.0.0.1
 Raw request: "GET /brief?holberton=school&street=972_Mission HTTP/1.1
 Host: localhost:8080
@@ -17,7 +17,7 @@ Accept: */*
 "
 Path: /brief
 Query: "holberton" -> "school"
-Query: "street" -> "972_Missionù"
+Query: "street" -> "972_Mission"
 Client connected: 127.0.0.1
 Raw request: "GET /description/full/?holberton=school&street=972_Mission&upfront_tuition=NaN&duration=2Years HTTP/1.1
 Host: localhost:8080
