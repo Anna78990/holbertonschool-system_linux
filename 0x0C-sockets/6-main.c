@@ -70,7 +70,7 @@ void process_request(int client_socket)
 	const char *response;
 
 	memset(buffer, 0, sizeof(buffer));
-		bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+	bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
 	if (bytes_received == -1)
 	{
 		perror("recv");
@@ -105,6 +105,7 @@ int main(void)
 	socklen_t client_len;
 	char *client_ip;
 
+	setbuf(stdout, NULL);
 	server_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_socket < 0)
 	{
@@ -130,9 +131,7 @@ int main(void)
 		client_socket = accept(server_socket,
 				(struct sockaddr *)&client_addr, &client_len);
 		if (client_socket < 0)
-		{
 			perror("Error accepting connection"), exit(EXIT_FAILURE);
-		}
 		client_ip = (char *)malloc(sizeof(char) * INET_ADDRSTRLEN);
 		inet_ntop(AF_INET, &(client_addr.sin_addr), client_ip, INET_ADDRSTRLEN);
 		printf("Client connected: %s\n", client_ip);

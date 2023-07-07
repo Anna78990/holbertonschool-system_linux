@@ -1,32 +1,45 @@
 Server listening on port 8080
 Client connected: 127.0.0.1
-Raw request: "GET /?holberton=school HTTP/1.1
+Raw request: "GET / HTTP/1.1
 Host: localhost:8080
 User-Agent: curl/7.68.0
 Accept: */*
+Holberton: School
 
 "
-Path: /
-Query: "holberton" -> "school"
+Header: "Host" -> "localhost:8080"
+Header: "User-Agent" -> "curl/7.68.0"
+Header: "Accept" -> "*/*"
+Header: "Holberton" -> "School"
 Client connected: 127.0.0.1
-Raw request: "GET /brief?holberton=school&street=972_Mission HTTP/1.1
+Raw request: "GET / HTTP/1.1
 Host: localhost:8080
 User-Agent: curl/7.68.0
 Accept: */*
+Holberton: School
+Street: 972-Mission
 
 "
-Path: /brief
-Query: "holberton" -> "school"
-Query: "street" -> "972_Mission"
+Header: "Host" -> "localhost:8080"
+Header: "User-Agent" -> "curl/7.68.0"
+Header: "Accept" -> "*/*"
+Header: "Holberton" -> "School"
+Header: "Street" -> "972-Mission"
 Client connected: 127.0.0.1
-Raw request: "GET /description/full/?holberton=school&street=972_Mission&upfront_tuition=NaN&duration=2Years HTTP/1.1
+Raw request: "GET / HTTP/1.1
 Host: localhost:8080
 User-Agent: curl/7.68.0
 Accept: */*
+Holberton: School
+Street: 972-Mission
+Upfront-tuition: Not-a-Number
+Duration: 2-Years
 
 "
-Path: /description/full/
-Query: "holberton" -> "school"
-Query: "street" -> "972_Mission"
-Query: "upfront_tuition" -> "NaN"
-Query: "duration" -> "2Years"
+Header: "Host" -> "localhost:8080"
+Header: "User-Agent" -> "curl/7.68.0"
+Header: "Accept" -> "*/*"
+Header: "Holberton" -> "School"
+Header: "Street" -> "972-Mission"
+Header: "Upfront-tuition" -> "Not-a-Number"
+Header: "Duration" -> "2-Years"
