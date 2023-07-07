@@ -5,56 +5,32 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <ctype.h>
 
 #define BUFFER_SIZE 1024
 
-
 /**
- * print_queries - print queries
- * @queries: double pointer to query array
+ * trim - trimming given string
+ * @str: string to trim
+ * Return: trimed string
  */
-void print_queries(char **queries)
+char* trim(char* str)
 {
-	int i = 0;
-	char *tok, *tok2;
+	size_t len = strlen(str);
+	char *end;
 
-	while (queries[i])
-	{
-		tok = strtok(queries[i], ":");
-		tok2 = strtok(NULL, "\r\n");
-		printf("Header: \"%s\" -> \"%s\"\n", tok, tok2 + 1);
-		i++;
-	}
-}
+	if (len == 0)
+		return (str);
 
-/**
- * get_query - create array of query
- * @path: path to refer
- * Return: array of query
- */
-char **get_query(char *path)
-{
-	char **query = NULL;
-	char *path_dup, *token;
-	int count = 0;
+	end = str + len - 1;
+	while (end > str && isspace((unsigned char)*end))
+		end--;
+	*(end + 1) = '\0';
 
-	if (path == NULL)
-		return (NULL);
-	path_dup = strdup(path);
-	token = strtok(path_dup, "\r\n");
-	while (token)
-	{
-		query = realloc(query, sizeof(char *) * (count + 1));
-		query[count] = strdup(token);
-		count++;
-		token = strtok(NULL, "\r\n");
-	}
+	while (*str && isspace((unsigned char)*str))
+		str++;
 
-	query = realloc(query, sizeof(char *) * (count + 1));
-	query[count] = NULL;
-
-	free(path_dup);
-	return (query);
+	return (str);
 }
 
 /**
@@ -65,8 +41,7 @@ void process_request(int client_socket)
 {
 	char buffer[BUFFER_SIZE];
 	ssize_t bytes_received, bytes_sent;
-	char **headers;
-	char *h_start;
+	char *header, *h_start, *rest, *ptr, *key, *value;
 	const char *response;
 
 	memset(buffer, 0, sizeof(buffer));
@@ -78,10 +53,16 @@ void process_request(int client_socket)
 	}
 
 	printf("Raw request: \"%s\"\n", buffer);
-	h_start = strstr(buffer, "Host: ");
-	headers = get_query(h_start);
-	print_queries(headers);
-	free(headers);
+	h_start = strtok_r(buffer, "\r\n", &rest);
+	header = strtok_r(NULL, "\r\n", &rest);
+	while (header)
+	{
+		key = trim(strtok_r(header, ":", &ptr));
+		value = trim(strtok_r(NULL, "\r\n", &ptr));
+		printf("Header: \"%s\" -> \"%s\"\n", key, value);
+		header = strtok_r(NULL, "\r\n", &rest);
+	}
+	(void)h_start;
 	response = "HTTP/1.1 200 OK\r\n\r\n";
 	bytes_sent = send(client_socket, response, strlen(response), 0);
 	if (bytes_sent == -1)
@@ -89,7 +70,6 @@ void process_request(int client_socket)
 		perror("send");
 		exit(EXIT_FAILURE);
 	}
-
 	close(client_socket);
 }
 
