@@ -14,7 +14,7 @@
  * @str: string to trim
  * Return: trimed string
  */
-char* trim(char* str)
+char *trim(char *str)
 {
 	size_t len = strlen(str);
 	char *end;

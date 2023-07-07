@@ -5,66 +5,32 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <ctype.h>
 
 #define BUFFER_SIZE 1024
 
 /**
- * print_queries - print queries
- * @queries: double pointer to query array
+ * trim - trimming given string
+ * @str: string to trim
+ * Return: trimed string
  */
-void print_queries(char **queries)
+char *trim(char *str)
 {
-	int i = 0;
-	char *tok, *tok2;
+	size_t len = strlen(str);
+	char *end;
 
-	while (queries[i])
-	{
-		tok = strtok(queries[i], "=");
-		tok2 = strtok(NULL, "\0");
-		printf("Body param: \"%s\" -> \"%s\"\n", tok, tok2);
-		i++;
-	}
-}
+	if (len == 0)
+		return (str);
 
-/**
- * get_query - create array of query
- * @path: path to refer
- * Return: array of query
- */
-char **get_query(char *path)
-{
-	char **query = NULL;
-	char *path_dup, *token, *kv;
-	int count = 0;
+	end = str + len - 1;
+	while (end > str && isspace((unsigned char)*end))
+		end--;
+	*(end + 1) = '\0';
 
-	if (path == NULL)
-		return (NULL);
-	path_dup = strdup(path);
-	token = strtok(path_dup, "\r\n");
-	while (token)
-	{
-		if (strchr(token, '='))
-		{
-			if (strchr(token, '&'))
-			{
-				kv = strtok(token, "&");
-				while (kv)
-				{
-					query = realloc(query,
-					sizeof(char *) * (count + 1));
-					query[count] = strdup(kv);
-					count++;
-					kv = strtok(NULL, "&");
-				}
-			}
-		}
-		token = strtok(NULL, "\r\n");
-	}
-	query = realloc(query, sizeof(char *) * (count + 1));
-	query[count] = NULL;
+	while (*str && isspace((unsigned char)*str))
+		str++;
 
-	free(path_dup);
-	return (query);
+	return (str);
 }
 
 /**
@@ -74,36 +40,44 @@ char **get_query(char *path)
 void process_request(int client_socket)
 {
 	char buffer[BUFFER_SIZE];
-	ssize_t bytes_received, bytes_sent;
-	char *path, *dup, *response;
-	char **body_params;
+	ssize_t bytes_received, bytes_sent, encode;
+	char *path, *header, *response, *start, *ptr, *key, *value, *query, *body;
+	char *start_lines;
 
 	memset(buffer, 0, sizeof(buffer));
 	bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
 	if (bytes_received == -1)
+		perror("recv"), exit(EXIT_FAILURE);
+	printf("Raw request: \"%s\"\n", buffer), body = strstr(buffer, "\r\n\r\n");
+	if (strlen(body) > 0)
+		*body = 0, body += strlen("\r\n\r\n");
+	start_lines = strtok_r(buffer, "\r\n", &start), strtok(start_lines, " ");
+	path = strtok(NULL, " "), printf("Path: %s\n", path);
+	header = strtok_r(NULL, "\r\n\r\n", &start);
+	while (header)
 	{
-		perror("recv");
-		exit(EXIT_FAILURE);
+		key = trim(strtok_r(header, ":", &ptr));
+		value = trim(strtok_r(NULL, "\r\n", &ptr));
+		if (!strcasecmp(key, "Content-Type"))
+			if (!strcasecmp(value, "application/x-www-form-urlencoded"))
+				encode = 1;
+		header = strtok_r(NULL, "\r\n", &start);
 	}
-
-	printf("Raw request: \"%s\"\n", buffer);
-	dup = strdup(buffer);
-	path = strtok(dup, " ");
-	path = strtok(NULL, " ");
-
-	printf("Path: %s\n", path);
-	body_params = get_query(buffer);
-	print_queries(body_params);
-	free(dup);
-	free(body_params);
-
+	if (encode)
+	{
+		query = strtok_r(body, "&", &start);
+		while (query)
+		{
+			key = strtok_r(query, "=", &ptr);
+			value = strtok_r(NULL, "=", &ptr);
+			printf("Body param: \"%s\" -> \"%s\"\n", key, value);
+			query = strtok_r(NULL, "&", &start);
+		}
+	}
 	response = "HTTP/1.1 200 OK\r\n\r\n";
 	bytes_sent = send(client_socket, response, strlen(response), 0);
 	if (bytes_sent == -1)
-	{
-		perror("send");
-		exit(EXIT_FAILURE);
-	}
+		perror("send"), exit(EXIT_FAILURE);
 	close(client_socket);
 }
 
