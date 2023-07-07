@@ -120,6 +120,7 @@ int main(void)
 	socklen_t client_len;
 	char *client_ip;
 
+	setbuf(stdout, NULL);
 	server_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_socket < 0)
 	{

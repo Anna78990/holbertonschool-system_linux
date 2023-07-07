@@ -20,6 +20,6 @@ function http_req
 (timeout --preserve-status 5s "$1" > todo_api_output 2>&1 &)
 sleep 1
 
-http_req GET / -H "Holberton: School"
-http_req GET / -H "Holberton: School" -H "Street: 972-Mission"
-http_req GET / -H "Holberton: School" -H "Street: 972-Mission" -H "Upfront-tuition: Not-a-Number" -H "Duration: 2-Years"
+http_req POST / -d 'holberton=school'
+http_req POST /test -d 'holberton=school&street=972_Mission'
+http_req POST /test/test -d 'holberton=school&street=972_Mission&upfront_tuition=NaN&duration=2Years'
