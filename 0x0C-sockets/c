@@ -1,0 +1,24 @@
+How can I fix this error?
+@
+        sprintf(res, "{\"id\":%d,\"title\":\"%s\",\"description\":\"%s\"}",
+			todo->id, todo->title, todo->description);
+	sprintf(buffer, "HTTP/1.1 201 Created\r\n\"Content-Length\": %lu\r\n\
+		Content-Type: application/json\r\n\r\n%s", strlen(res), res);
+	return (buffer);
+}
+---
+8-main.c: In function 'handle_post':
+8-main.c:69:9: error: function returns address of local variable [-Werror=return-local-addr]
+   69 |  return (buffer);
+      |         ^
+8-main.c:67:18: error: '%s' directive writing up to 1023 bytes into a region of size between 926 and 945 [-Werror=format-overflow=]
+   67 |  sprintf(buffer, "HTTP/1.1 201 Created\r\n\"Content-Length\": %lu\r\n\
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   68 |   Content-Type: application/json\r\n\r\n%s", strlen(res), res);
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~               ~~~
+8-main.c:67:2: note: 'sprintf' output between 80 and 1122 bytes into a destination of size 1024
+   67 |  sprintf(buffer, "HTTP/1.1 201 Created\r\n\"Content-Length\": %lu\r\n\
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   68 |   Content-Type: application/json\r\n\r\n%s", strlen(res), res);
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cc1: all warnings being treated as errors
