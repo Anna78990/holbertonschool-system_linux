@@ -17,5 +17,6 @@ typedef struct todo_t
 } todo_s;
 
 void res_check(char *res);
+char *trim(char *str);
 
 #endif

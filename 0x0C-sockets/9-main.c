@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -79,7 +78,7 @@ char *handle_post(char *body, short content_length)
 	char buffer[BUFFER_SIZE], res[BUFFER_SIZE];
 	char *created = "HTTP/1.1 201 Created\r\n", *length = "Content-Length: ";
 	char *json = "Content-Type: application/json\r\n\r\n";
-	char *request, *desc = NULL;
+	char *desc = NULL, *request;
 	struct todo_t *todo;
 	size_t i;
 
@@ -115,9 +114,6 @@ char *handle_post(char *body, short content_length)
 	request[i] = 0;
 	return (request);
 }
-
-
-
 
 /**
  * process_request - print request infos

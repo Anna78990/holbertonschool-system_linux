@@ -23,4 +23,9 @@ void res_check(char *res)
 		printf(" -> 201 Created\r\n");
 		free(res);
 	}
+	else if (strncmp(code + 1, "200", 3) == 0)
+	{
+		printf(" -> 200 OK\r\n");
+		free(res);
+	}
 }
