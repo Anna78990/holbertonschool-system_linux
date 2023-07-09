@@ -2,7 +2,7 @@
 #define SOCKET_H
 
 /**
- * struct Todo - todo linked list structure
+ * struct todo_t - todo linked list structure
  * @id: id of current todo item
  * @title: title of current todo item
  * @description: description of current todo item
@@ -19,5 +19,6 @@ typedef struct todo_t
 void res_check(char *res);
 char *trim(char *str);
 char *check_id(char *path);
+void print_m_p(char *method, char *path);
 
 #endif

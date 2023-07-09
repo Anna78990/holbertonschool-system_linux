@@ -142,7 +142,7 @@ void process_request(int cs)
 	if (strlen(body) > 0)
 		*body = 0, body += strlen("\r\n\r\n");
 	s = strtok_r(buffer, "\r\n", &start), method = strtok(s, " ");
-	path = strtok(NULL, " "), printf("%s %s", method, path);
+	path = strtok(NULL, " "), print_m_p(method, path);
 	if (strcmp(path, "/todos") != 0 && strncmp(path, "/todos?", 6) != 0)
 		resp = "HTTP/1.1 404 Not Found\r\n\r\n";
 	else

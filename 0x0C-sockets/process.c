@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -21,4 +22,22 @@ char *check_id(char *path)
 			return (strtok(check, "="));
 	}
 	return (NULL);
+}
+
+/**
+ * print_m_p - print method and path
+ * @method: method
+ * @path: path
+ */
+void print_m_p(char *method, char *path)
+{
+	char *p;
+
+	if (strchr(path, '?') == NULL)
+		printf("%s %s", method, path);
+	else
+	{
+		p = strtok(path, "?");
+		printf("%s %s", method, p);
+	}
 }
