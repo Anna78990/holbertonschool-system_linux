@@ -18,7 +18,7 @@ typedef struct todo_t
 
 void res_check(char *res);
 char *trim(char *str);
-char *check_id(char *path);
+int check_id(char *path);
 void print_m_p(char *method, char *path);
 
 #endif

@@ -40,7 +40,7 @@ void root_check(struct todo_t *todo)
  * @i: id string
  * Return: response
  */
-char *handle_get(int cs, char *i)
+char *handle_get(int cs, int i)
 {
 	char buffer[BUF_SIZE], header[BUFFER_SIZE];
 	char *ok = "HTTP/1.1 200 OK\r\n", *length = "Content-Length: ";
@@ -49,7 +49,7 @@ char *handle_get(int cs, char *i)
 	struct todo_t *todo = root;
 
 	memset(buffer, 0, BUFFER_SIZE), memset(header, 0, BUFFER_SIZE);
-	if (i == NULL)
+	if (i < 0)
 	{
 		buffer[0] = '[';
 		while (todo)
@@ -67,7 +67,7 @@ char *handle_get(int cs, char *i)
 	{
 		while (todo)
 		{
-			if (todo->id == atoi(i))
+			if (todo->id == i)
 			{
 				sprintf(buffer, "{%s:%d,%s:\"%s\",%s:\"%s\"}",
 					id, todo->id, t, todo->title,
@@ -76,7 +76,7 @@ char *handle_get(int cs, char *i)
 			}
 			todo = todo->next;
 		}
-		if (todo == NULL)
+		if (todo == NULL && strlen(buffer) < 36)
 			return ("HTTP/1.1 404 Not Found\r\n\r\n");
 	}
 	sprintf(header, "%s%s%lu\r\n%s%s", ok, length, strlen(buffer), json, buffer);
@@ -133,8 +133,9 @@ char *handle_post(char *body, short content_length, int cs)
  */
 void process_request(int cs)
 {
-	char buffer[BUFFER_SIZE], *id, *s, *method;
+	char buffer[BUFFER_SIZE], *s, *method;
 	ssize_t content_length = 0;
+	int i;
 	char *path, *header, *resp, *start, *ptr, *key, *value, *body;
 
 	memset(buffer, 0, sizeof(buffer)), recv(cs, buffer, sizeof(buffer) - 1, 0);
@@ -163,13 +164,11 @@ void process_request(int cs)
 			if (strcasecmp(method, "POST") == 0)
 				resp = handle_post(body, content_length, cs);
 			else if (strcasecmp(method, "GET") == 0)
-				id = check_id(path), resp = handle_get(cs, id);
+				i = check_id(path), resp = handle_get(cs, i);
 		}
 	}
 	if (resp)
-	{
 		send(cs, resp, strlen(resp), 0), res_check(resp);
-	}
 	close(cs);
 }
 
