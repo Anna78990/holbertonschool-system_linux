@@ -52,7 +52,7 @@ char *handle_get(int cs)
 	while (todo)
 	{
 		sprintf(buffer + strlen(buffer),
-			"{%s:%d, %s:\"%s\",%s:\"%s\"}", id, todo->id, t,
+			"{%s:%d,%s:\"%s\",%s:\"%s\"}", id, todo->id, t,
 			todo->title, desc, todo->description);
 		if (todo->next)
 			buffer[strlen(buffer)] = ',';
