@@ -18,3 +18,6 @@ todo_api_4: 8-main.c
 
 todo_api_5: 9-main.c
 	$(CC) $(CFLAGS) -o todo_api_5 9-main.c trim.c res.c
+
+todo_api_6: 10-main.c
+	$(CC) $(CFLAGS) -o todo_api_6 10-main.c trim.c res.c process.c

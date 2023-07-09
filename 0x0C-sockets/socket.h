@@ -18,5 +18,6 @@ typedef struct todo_t
 
 void res_check(char *res);
 char *trim(char *str);
+char *check_id(char *path);
 
 #endif
