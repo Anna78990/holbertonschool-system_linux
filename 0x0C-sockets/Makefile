@@ -17,4 +17,4 @@ todo_api_4: 8-main.c
 	$(CC) $(CFLAGS) -o todo_api_4 8-main.c response.c
 
 todo_api_5: 9-main.c
-	$(CC) $(CFLAGS) -o todo_api_5 9-main.c trim.c response.c
+	$(CC) $(CFLAGS) -o todo_api_5 9-main.c trim.c res.c

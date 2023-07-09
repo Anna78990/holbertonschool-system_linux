@@ -12,6 +12,8 @@ static int id;
 static struct todo_t *root;
 
 #define BUFFER_SIZE 1024
+#define BUF_SIZE 600
+
 
 /**
  * root_check - check if root is NULL
@@ -32,13 +34,17 @@ void root_check(struct todo_t *todo)
 	}
 }
 
-char *handle_get(void)
+/**
+ * handle_get - handle get request
+ * @cs: client socket
+ * Return: response
+ */
+char *handle_get(int cs)
 {
-	char buffer[BUFFER_SIZE], header[BUFFER_SIZE], *res;
+	char buffer[BUF_SIZE], header[BUFFER_SIZE];
 	char *ok = "HTTP/1.1 200 OK\r\n", *length = "Content-Length: ";
 	char *json = "Content-Type: application/json\r\n\r\n";
 	char *id = "\"id\"", *t = "\"title\"", *desc = "\"description\"";
-	size_t i;
 	struct todo_t *todo = root;
 
 	memset(buffer, 0, BUFFER_SIZE), memset(header, 0, BUFFER_SIZE);
@@ -53,36 +59,29 @@ char *handle_get(void)
 		todo = todo->next;
 	}
 	buffer[strlen(buffer)] = ']';
-	sprintf(header, "%s%s%lu\r\n%s", ok, length, strlen(buffer), json);
-	res = (char *)malloc(sizeof(char) * (strlen(header) + strlen(buffer)));
-	for (i = 0; i < strlen(res) + strlen(buffer); i++)
-	{
-		if (i >= strlen(header))
-			res[i] = buffer[i - strlen(header)];
-		else
-			res[i] = header[i];
-	}
-	res[i] = 0;
-	return (res);
+	sprintf(header, "%s%s%lu\r\n%s%s", ok, length, strlen(buffer), json, buffer);
+	send(cs, header, strlen(header), 0);
+	res_check(header);
+	return (NULL);
 }
 
 /**
  * handle_post - parses post request
  * @body: the body string
  * @content_length: length of body string
+ * @cs: client socket
  * Return: 0 on success else 1
  */
-char *handle_post(char *body, short content_length)
+char *handle_post(char *body, short content_length, int cs)
 {
 	char *query, *k, *v, *ptr, *kv, *title = NULL;
-	char buffer[BUFFER_SIZE], res[BUFFER_SIZE];
+	char buffer[BUFFER_SIZE], res[BUF_SIZE];
 	char *created = "HTTP/1.1 201 Created\r\n", *length = "Content-Length: ";
 	char *json = "Content-Type: application/json\r\n\r\n";
-	char *desc = NULL, *request;
+	char *desc = NULL;
 	struct todo_t *todo;
-	size_t i;
 
-	memset(buffer, 0, BUFFER_SIZE), memset(res, 0, BUFFER_SIZE);
+	memset(buffer, 0, BUFFER_SIZE), memset(res, 0, BUF_SIZE);
 	body[content_length] = 0, query = strtok_r(body, "&", &ptr);
 	while (query)
 	{
@@ -102,43 +101,32 @@ char *handle_post(char *body, short content_length)
 	todo->description = strdup(desc), todo->next = NULL, root_check(todo);
 	sprintf(res, "{\"id\":%d,\"title\":\"%s\",\"description\":\"%s\"}",
 			todo->id, todo->title, todo->description);
-	sprintf(buffer, "%s%s%lu\r\n%s", created, length, strlen(res), json);
-	request = (char *)malloc(sizeof(char) * (strlen(res) + strlen(buffer)));
-	for (i = 0; i < strlen(res) + strlen(buffer); i++)
-	{
-		if (i >= strlen(buffer))
-			request[i] = res[i - strlen(buffer)];
-		else
-			request[i] = buffer[i];
-	}
-	request[i] = 0;
-	return (request);
+	sprintf(buffer, "%s%s%lu\r\n%s%s", created, length, strlen(res), json, res);
+	send(cs, buffer, strlen(buffer), 0);
+	res_check(buffer);
+	return (NULL);
 }
 
 /**
  * process_request - print request infos
- * @client_socket: socket to refer
+ * @cs: socket to refer
  */
-void process_request(int client_socket)
+void process_request(int cs)
 {
 	char buffer[BUFFER_SIZE];
-	ssize_t bytes_received, content_length = 0;
-	char *path, *header, *response, *start, *ptr, *key, *value, *body;
+	ssize_t content_length = 0;
+	char *path, *header, *resp, *start, *ptr, *key, *value, *body;
 	char *s, *method;
 
 	memset(buffer, 0, sizeof(buffer));
-	bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
-	if (bytes_received == -1)
-		perror("recv"), exit(EXIT_FAILURE);
-	printf("body is %s\n", buffer);
+	recv(cs, buffer, sizeof(buffer) - 1, 0);
 	body = strstr(buffer, "\r\n\r\n");
 	if (strlen(body) > 0)
 		*body = 0, body += strlen("\r\n\r\n");
 	s = strtok_r(buffer, "\r\n", &start), method = strtok(s, " ");
-	printf("method is %s\n", method);
 	path = strtok(NULL, " "), printf("%s %s", method, path);
 	if (strcasecmp(path, "/todos") != 0)
-		response = "HTTP/1.1 404 Not Found\r\n\r\n";
+		resp = "HTTP/1.1 404 Not Found\r\n\r\n";
 	else
 	{
 		header = strtok_r(NULL, "\r\n\r\n", &start);
@@ -151,17 +139,20 @@ void process_request(int client_socket)
 			header = strtok_r(NULL, "\r\n", &start);
 		}
 		if (content_length == 0 && strcasecmp(method, "POST") == 0)
-			response = "HTTP/1.1 411 Length Required\r\n\r\n";
+			resp = "HTTP/1.1 411 Length Required\r\n\r\n";
 		else
 		{
 			if (strcasecmp(method, "POST") == 0)
-				response = handle_post(body, content_length);
+				resp = handle_post(body, content_length, cs);
 			else if (strcasecmp(method, "GET") == 0)
-				response = handle_get();
+				resp = handle_get(cs);
 		}
 	}
-	send(client_socket, response, strlen(response), 0);
-	res_check(response), close(client_socket);
+	if (resp)
+	{
+		send(cs, resp, strlen(resp), 0), res_check(resp);
+	}
+	close(cs);
 }
 
 
@@ -172,7 +163,7 @@ void process_request(int client_socket)
  */
 int main(void)
 {
-	int server_socket, client_socket;
+	int server_socket, cs;
 	struct sockaddr_in server_addr, client_addr;
 	socklen_t client_len;
 	char *client_ip;
@@ -198,14 +189,14 @@ int main(void)
 	while (1)
 	{
 		client_len = sizeof(client_addr);
-		client_socket = accept(server_socket,
+		cs = accept(server_socket,
 				(struct sockaddr *)&client_addr, &client_len);
-		if (client_socket < 0)
+		if (cs < 0)
 			perror("Error accepting connection"), exit(EXIT_FAILURE);
 		client_ip = (char *)malloc(sizeof(char) * INET_ADDRSTRLEN);
 		inet_ntop(AF_INET, &(client_addr.sin_addr), client_ip, INET_ADDRSTRLEN);
 		printf("%s ", client_ip);
-		process_request(client_socket);
+		process_request(cs);
 		free(client_ip);
 	}
 	close(server_socket);
