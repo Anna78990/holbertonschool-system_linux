@@ -10,8 +10,6 @@ void error_hundle(char *dirname, char *command)
 	struct stat buf;
 	char er[1024];
 
-	if (dirname[0] == '-')
-		return;
 	if (lstat(dirname, &buf) == 0)
 	{
 		if (errno == 13)
@@ -66,8 +64,6 @@ void _ls(int bit, char *dirname, int n_dir, int ctr, char *command)
 		}
 		if (c != 10)
 			printf("\n");
-		if (bit)
-			ctr -= 1;
 		if (n_dir > ctr)
 			printf("\n");
 		closedir(dir);
@@ -85,22 +81,29 @@ void _ls(int bit, char *dirname, int n_dir, int ctr, char *command)
 int main(int argc, char *argv[])
 {
 	char *cur_dir = "./";
-	int i, bit = 0, op_idx, n_dir = 0;
+	int j = 0, i, ctr = 0;
+	int bit = 0, *op_idx, n_dir = argc - 1, num_op = 0;
 
 	op_idx = op_index(argv);
-	if (op_idx != argc)
-		n_dir = argc - 2;
-	else
-		n_dir = argc - 1;
-	if (op_idx != argc)
-		bit = parse_options(argv[op_idx]);
-	for (i = 0; argv[i]; i++)
+	if (op_idx)
 	{
-		if (argc == 1 || (argc == 2 && op_idx == i))
-			_ls(bit, cur_dir, n_dir, i, argv[0]);
-		else if (i != 0 && i != op_idx)
-			_ls(bit, argv[i], n_dir, i, argv[0]);
+		while (op_idx[j] != 0)
+		{
+			bit = parse_options(argv[op_idx[j++]], bit);
+			n_dir -= 1, num_op += 1;
+		}
 	}
+	j = 0, ctr = 0;
+	for (i = 1; argv[i]; i++)
+	{
+		if (op_idx && op_idx[j] == i)
+			j++;
+		else if (n_dir == 0)
+			_ls(bit, cur_dir, n_dir, ctr, argv[0]);
+		else
+			_ls(bit, argv[i], n_dir, ++ctr, argv[0]);
+	}
+	free(op_idx);
 	return (0);
 }
 

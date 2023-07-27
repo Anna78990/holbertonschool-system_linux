@@ -1,20 +1,37 @@
 #include "_ls.h"
 
+
 /**
  * op_index - search index which contans option
  * @argv: array of argv to search
  * Return: found index or length + 1 if not found
  */
-int op_index(char **argv)
+int *op_index(char **argv)
 {
-	int i;
+	int i, ctr = 0;
+	int *op_arr;
 
 	for (i = 0; argv[i]; i++)
 	{
 		if (argv[i][0] == '-')
-			return (i);
+			ctr++;
 	}
-	return (i);
+	if (ctr == 0)
+	{
+		return (NULL);
+	}
+	else
+		op_arr = (int *)malloc(sizeof(int) * ctr);
+	ctr = 0;
+	for (i = 0; argv[i]; i++)
+	{
+		if (argv[i][0] == '-')
+		{
+			op_arr[ctr] = i;
+			ctr++;
+		}
+	}
+	return (op_arr);
 }
 
 /**
@@ -34,32 +51,32 @@ int file_check(char *name)
 /**
  * parse_options - parses options from args
  * @arg: the option arg string
+ * @bit: bit to refer
  * Return: option bit
  */
-int parse_options(char *arg)
+int parse_options(char *arg, int bit)
 {
-	int i = 0;
 
 	while (*++arg)
 	{
 		switch (*arg)
 		{
 			case '1':
-				i |= OPTION_1;
+				bit |= OPTION_1;
 				break;
 			case 'a':
-				i |= OPTION_a;
+				bit |= OPTION_a;
 				break;
 			case 'A':
-				i |= OPTION_A;
+				bit |= OPTION_A;
 				break;
 			case 'l':
-				i |= OPTION_l;
+				bit |= OPTION_l;
 				break;
 			default:
 				exit(2);
 				break;
 		}
 	}
-	return (i);
+	return (bit);
 }
