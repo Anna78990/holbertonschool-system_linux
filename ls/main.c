@@ -29,8 +29,10 @@ void error_hundle(char *dirname)
  * _ls - list the files under given directory
  * @bit: bit value which contains information about option
  * @dirname: directory name to use
+ * @n_dir: number of directories
+ * @ctr: times when the function counted
  */
-void _ls(int bit, char *dirname)
+void _ls(int bit, char *dirname, int n_dir, int ctr)
 {
 	DIR *dir;
 	char c = ' ';
@@ -39,7 +41,7 @@ void _ls(int bit, char *dirname)
 	dir = opendir(dirname);
 	if (dir)
 	{
-		if (_strcmp(dirname, "./"))
+		if (_strcmp(dirname, "./") && n_dir > 1)
 			printf("%s:\n", dirname);
 		if (bit & OPTION_1)
 			c = '\n';
@@ -55,7 +57,12 @@ void _ls(int bit, char *dirname)
 				printf("%s%c", read->d_name, c);
 
 		}
-		printf("\n");
+		if (c != 10)
+			printf("\n");
+		if (bit)
+			ctr -= 1;
+		if (n_dir > ctr)
+			printf("\n");
 		closedir(dir);
 	}
 	else
@@ -71,17 +78,21 @@ void _ls(int bit, char *dirname)
 int main(int argc, char *argv[])
 {
 	char *cur_dir = "./";
-	int i, bit = 0, op_idx;
+	int i, bit = 0, op_idx, n_dir = 0;
 
 	op_idx = op_index(argv);
+	if (op_idx != argc)
+		n_dir = argc - 2;
+	else
+		n_dir = argc - 1;
 	if (op_idx != argc)
 		bit = parse_options(argv[op_idx]);
 	for (i = 0; argv[i]; i++)
 	{
 		if (argc == 1 || (argc == 2 && op_idx == i))
-			_ls(bit, cur_dir);
+			_ls(bit, cur_dir, n_dir, i);
 		else if (i != 0 && i != op_idx)
-			_ls(bit, argv[i]);
+			_ls(bit, argv[i], n_dir, i);
 	}
 	return (0);
 }
