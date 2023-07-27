@@ -81,29 +81,27 @@ void _ls(int bit, char *dirname, int n_dir, int ctr, char *command)
 int main(int argc, char *argv[])
 {
 	char *cur_dir = "./";
-	int j = 0, i, ctr = 0;
-	int bit = 0, *op_idx, n_dir = argc - 1, num_op = 0;
+	int j = 0, i = 1, ctr = 0;
+	int bit = 0, n_dir = argc - 1, num_op = 0;
 
-	op_idx = op_index(argv);
-	if (op_idx)
+	/* op_idx = op_index(argv);*/
+	while (argv[i])
 	{
-		while (op_idx[j] != 0)
+		if (op_check(argv[i]))
 		{
-			bit = parse_options(argv[op_idx[j++]], bit);
+			bit = parse_options(argv[i], bit);
 			n_dir -= 1, num_op += 1;
 		}
+		i++;
 	}
-	j = 0, ctr = 0;
-	for (i = 1; argv[i]; i++)
+	for (j = 1; argv[j]; j++)
 	{
-		if (op_idx && op_idx[j] == i)
-			j++;
+		if (op_check(argv[j]))
+			continue;
 		else if (n_dir == 0)
 			_ls(bit, cur_dir, n_dir, ctr, argv[0]);
 		else
-			_ls(bit, argv[i], n_dir, ++ctr, argv[0]);
+			_ls(bit, argv[j], n_dir, ++ctr, argv[0]);
 	}
-	free(op_idx);
 	return (0);
 }
-

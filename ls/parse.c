@@ -1,37 +1,16 @@
 #include "_ls.h"
 
-
 /**
- * op_index - search index which contans option
- * @argv: array of argv to search
- * Return: found index or length + 1 if not found
+ * op_check - if it is option or not
+ * @argv: string to check
+ * Return: 1 if found, 0 if not found
  */
-int *op_index(char **argv)
+int op_check(char *argv)
 {
-	int i, ctr = 0;
-	int *op_arr;
-
-	for (i = 0; argv[i]; i++)
-	{
-		if (argv[i][0] == '-')
-			ctr++;
-	}
-	if (ctr == 0)
-	{
-		return (NULL);
-	}
+	if (argv[0] == '-')
+		return (1);
 	else
-		op_arr = (int *)malloc(sizeof(int) * ctr);
-	ctr = 0;
-	for (i = 0; argv[i]; i++)
-	{
-		if (argv[i][0] == '-')
-		{
-			op_arr[ctr] = i;
-			ctr++;
-		}
-	}
-	return (op_arr);
+		return (0);
 }
 
 /**

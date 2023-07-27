@@ -13,6 +13,7 @@
 #define OPTION_A 4
 #define OPTION_l 8
 
+int op_check(char *argv);
 int *op_index(char **argv);
 int file_check(char *name);
 int parse_options(char *arg, int bit);
