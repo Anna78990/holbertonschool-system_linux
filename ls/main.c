@@ -18,7 +18,8 @@ void error_hundle(char *dirname, char *command)
 					command, dirname);
 			perror(er);
 		}
-		printf("%s\n", dirname);
+		else
+			printf("%s\n", dirname);
 	}
 	else
 	{
