@@ -10,6 +10,8 @@ void error_hundle(char *dirname, char *command)
 	struct stat buf;
 	char er[1024];
 
+	if (dirname[0] == '-')
+		return;
 	if (lstat(dirname, &buf) == 0)
 	{
 		if (errno == 13)
