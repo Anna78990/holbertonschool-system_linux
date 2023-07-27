@@ -71,7 +71,7 @@ void _ls(int bit, char *dirname)
 int main(int argc, char *argv[])
 {
 	char *cur_dir = "./";
-	int i, bit, op_idx;
+	int i, bit = 0, op_idx;
 
 	op_idx = op_index(argv);
 	if (op_idx != argc)
