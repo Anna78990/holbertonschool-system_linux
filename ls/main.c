@@ -3,8 +3,9 @@
 /**
  * error_hundle - print error when it occurs
  * @dirname: directory name to check if it has error
+ * @command: command name
  */
-void error_hundle(char *dirname)
+void error_hundle(char *dirname, char *command)
 {
 	struct stat buf;
 	char er[1024];
@@ -13,15 +14,16 @@ void error_hundle(char *dirname)
 	{
 		if (errno == 13)
 		{
-			sprintf(er, "./hls: cannot open directory %s",
-					dirname);
+			sprintf(er, "%s: cannot open directory %s",
+					command, dirname);
 			perror(er);
 		}
 		printf("%s\n", dirname);
 	}
 	else
 	{
-		sprintf(er, "./hls: cannot access %s", dirname);
+		sprintf(er, "%s: cannot access %s", command,
+				dirname);
 		perror(er);
 	}
 }
@@ -32,8 +34,9 @@ void error_hundle(char *dirname)
  * @dirname: directory name to use
  * @n_dir: number of directories
  * @ctr: times when the function counted
+ * @command: command name
  */
-void _ls(int bit, char *dirname, int n_dir, int ctr)
+void _ls(int bit, char *dirname, int n_dir, int ctr, char *command)
 {
 	DIR *dir;
 	char c = ' ';
@@ -67,7 +70,7 @@ void _ls(int bit, char *dirname, int n_dir, int ctr)
 		closedir(dir);
 	}
 	else
-		error_hundle(dirname);
+		error_hundle(dirname, command);
 }
 
 /**
@@ -91,9 +94,9 @@ int main(int argc, char *argv[])
 	for (i = 0; argv[i]; i++)
 	{
 		if (argc == 1 || (argc == 2 && op_idx == i))
-			_ls(bit, cur_dir, n_dir, i);
+			_ls(bit, cur_dir, n_dir, i, argv[0]);
 		else if (i != 0 && i != op_idx)
-			_ls(bit, argv[i], n_dir, i);
+			_ls(bit, argv[i], n_dir, i, argv[0]);
 	}
 	return (0);
 }
