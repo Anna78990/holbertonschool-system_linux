@@ -13,7 +13,7 @@ void error_hundle(char *dirname)
 	{
 		if (errno == 13)
 		{
-			sprintf(er, "./hls: cannot open directory %s ",
+			sprintf(er, "./hls: cannot open directory %s",
 					dirname);
 			perror(er);
 		}
@@ -21,7 +21,7 @@ void error_hundle(char *dirname)
 	}
 	else
 	{
-		sprintf(er, "./hls: cannot access %s ", dirname);
+		sprintf(er, "./hls: cannot access %s", dirname);
 		perror(er);
 	}
 }
