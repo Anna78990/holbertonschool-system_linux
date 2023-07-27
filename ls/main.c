@@ -17,56 +17,30 @@ void error_hundle(char *dirname)
 					dirname);
 			perror(er);
 		}
-		else
-			printf("%s\n", dirname);
 	}
 	else
 	{
 		sprintf(er, "./hls: cannot access %s: ", dirname);
 		perror(er);
 	}
-	return (0);
 }
 
 /**
- * main - ls program
- * @argc: the number of arguments on the command line
- * @argv: argv
- * Return: content of the current diractory
-*/
-int main(int argc, char *argv[])
+ * _ls - list the files under given directory
+ * @bit: bit value which contains information about option
+ * @dirname: directory name to use
+ */
+void _ls(int bit, char *dirname)
 {
 	DIR *dir;
-	char *cur_dir = "./", c = ' ';
+	char c = ' ';
 	struct dirent *read;
-	int  bit, op_idx;
 
-	if (argc == 1)
-	{
-		dir = opendir(cur_dir);
-    		while ((read = readdir(dir)) != NULL)
-		{
-			if (read->d_name[0] != '.')
-        			printf("%s  ", read->d_name);
-		}
-		printf("\n");
-		closedir(dir);
-		return (0);
-	}
-	op_idx = op_index(argv);
-	if (op_idx != argc)
-		bit = parse_options(argv[op_idx]);
-	if (argc == 2 && argv[1][0] == '-')
-		dir = opendir(cur_dir);
-	else
-	{
-		dir = opendir(argv[1]);
-		cur_dir = argv[1];
-	}
+	dir = opendir(dirname);
 	if (dir)
 	{
-		if (!(argc == 2 && argv[1][0] == '-'))
-			printf("%s:\n", argv[1]);
+		if (_strcmp(dirname, "./"))
+			printf("%s:\n", dirname);
 		if (bit & OPTION_1)
 			c = '\n';
 		while ((read = readdir(dir)) != NULL)
@@ -83,6 +57,31 @@ int main(int argc, char *argv[])
 		}
 		printf("\n");
 		closedir(dir);
+	}
+	else
+		error_hundle(dirname);
+}
+
+/**
+ * main - ls program
+ * @argc: the number of arguments on the command line
+ * @argv: argv
+ * Return: content of the current diractory
+*/
+int main(int argc, char *argv[])
+{
+	char *cur_dir = "./";
+	int i, bit, op_idx;
+
+	op_idx = op_index(argv);
+	if (op_idx != argc)
+		bit = parse_options(argv[op_idx]);
+	for (i = 0; argv[i]; i++)
+	{
+		if (argc == 1 || (argc == 2 && op_idx == i))
+			_ls(bit, cur_dir);
+		else if (i != 0 && i != op_idx)
+			_ls(bit, argv[i]);
 	}
 	return (0);
 }

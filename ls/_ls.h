@@ -16,5 +16,6 @@
 int op_index(char **argv);
 int file_check(char *name);
 int parse_options(char *arg);
+int _strcmp(char *f, char *s);
 
 #endif
