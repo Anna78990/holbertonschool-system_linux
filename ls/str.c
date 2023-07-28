@@ -1,3 +1,4 @@
+#include "_ls.h"
 
 /**
  * _strcpy - copy string
@@ -60,23 +61,7 @@ unsigned int _strlen(char *str)
 	return (i);
 }
 
-/**
- * _memset - write the charatcters for a specified number
- * @s: void ptr
- * @c: value set
- * @n: number of bytes set
- *
- * Return: dest
- */
-void *_memset(void *s, int c, unsigned int n)
-{
-	unsigned char *bytes = s;
-	unsigned int i;
 
-	for (i = 0; i < n; i++)
-		bytes[i] = c;
-	return (bytes);
-}
 
 /**
  * _strcmp- compare two strings
@@ -106,4 +91,27 @@ int _strcmp(char *f, char *s)
 	if (size_s > size_f)
 		return (f[i] - s[size_s]);
 	return (0);
+}
+
+/**
+ * _strdup - duplicates a string
+ * @str: the string to duplicate
+ *
+ * Return: pointer to the duplicated string
+ */
+char *_strdup(const char *str)
+{
+	int length = 0;
+	char *buf;
+
+	if (str == NULL)
+		return (NULL);
+	while (*str++)
+		length++;
+	buf = malloc(sizeof(char) * (length + 1));
+	if (!buf)
+		return (NULL);
+	for (length++; length--;)
+		buf[length] = *--str;
+	return (buf);
 }

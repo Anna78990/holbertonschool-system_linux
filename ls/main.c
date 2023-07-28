@@ -4,8 +4,9 @@
  * error_hundle - print error when it occurs
  * @dirname: directory name to check if it has error
  * @command: command name
+ * @files: pointer to count file
  */
-void error_hundle(char *dirname, char *command)
+void error_hundle(char *dirname, char *command, int *files)
 {
 	struct stat buf;
 	char er[1024];
@@ -18,8 +19,15 @@ void error_hundle(char *dirname, char *command)
 					command, dirname);
 			perror(er);
 		}
+		if (S_ISDIR(buf.st_mode))
+		{
+			return;
+		}
 		else
+		{
 			printf("%s\n", dirname);
+			*files += 1;
+		}
 	}
 	else
 	{
@@ -35,9 +43,8 @@ void error_hundle(char *dirname, char *command)
  * @dirname: directory name to use
  * @n_dir: number of directories
  * @ctr: times when the function counted
- * @command: command name
  */
-void _ls(int bit, char *dirname, int n_dir, int ctr, char *command)
+void _ls(int bit, char *dirname, int n_dir, int ctr)
 {
 	DIR *dir;
 	char c = ' ';
@@ -68,8 +75,6 @@ void _ls(int bit, char *dirname, int n_dir, int ctr, char *command)
 			printf("\n");
 		closedir(dir);
 	}
-	else
-		error_hundle(dirname, command);
 }
 
 /**
@@ -81,27 +86,31 @@ void _ls(int bit, char *dirname, int n_dir, int ctr, char *command)
 int main(int argc, char *argv[])
 {
 	char *cur_dir = "./";
-	int j = 0, i = 1, ctr = 0;
+	int j = 0, i = 0, ctr = 0, files = 0;
 	int bit = 0, n_dir = argc - 1, num_op = 0;
 
-	/* op_idx = op_index(argv);*/
 	while (argv[i])
 	{
-		if (op_check(argv[i]))
+		if (i == 0)
+			i += 1;
+		else if (op_check(argv[i]))
 		{
-			bit = parse_options(argv[i], bit);
+			bit = parse_options(argv[i++], bit);
 			n_dir -= 1, num_op += 1;
 		}
-		i++;
-	}
-	for (j = 1; argv[j]; j++)
-	{
-		if (op_check(argv[j]))
-			continue;
-		else if (n_dir == 0)
-			_ls(bit, cur_dir, n_dir, ctr, argv[0]);
 		else
-			_ls(bit, argv[j], n_dir, ++ctr, argv[0]);
+			error_hundle(argv[i++], argv[0], &files);
+	}
+	if (files > 0)
+		printf("\n");
+	for (j = 0; argv[j]; j++)
+	{
+		if (n_dir == 0)
+			_ls(bit, cur_dir, n_dir, ctr);
+		else if (j == 0 || op_check(argv[j]))
+			continue;
+		else
+			_ls(bit, argv[j], n_dir, ++ctr);
 	}
 	return (0);
 }
