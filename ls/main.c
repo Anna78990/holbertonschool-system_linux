@@ -5,8 +5,9 @@
  * @dirname: directory name to check if it has error
  * @command: command name
  * @files: pointer to count file
+ * @size: size array
  */
-void error_hundle(char *dirname, char *command, int *files)
+void error_hundle(char *dirname, char *command, int *files, int *size)
 {
 	struct stat buf;
 	char er[1024];
@@ -20,14 +21,9 @@ void error_hundle(char *dirname, char *command, int *files)
 			perror(er);
 		}
 		if (S_ISDIR(buf.st_mode))
-		{
-			return;
-		}
+			check_length(size, dirname);
 		else
-		{
-			printf("%s\n", dirname);
-			*files += 1;
-		}
+			printf("%s\n", dirname), *files++;
 	}
 	else
 	{
@@ -43,8 +39,9 @@ void error_hundle(char *dirname, char *command, int *files)
  * @dirname: directory name to use
  * @n_dir: number of directories
  * @ctr: times when the function counted
+ * @size: size array
  */
-void _ls(int bit, char *dirname, int n_dir, int ctr)
+void _ls(int bit, char *dirname, int n_dir, int ctr, int *size)
 {
 	DIR *dir;
 	char c = ' ';
@@ -61,15 +58,24 @@ void _ls(int bit, char *dirname, int n_dir, int ctr)
 		{
 			if (read->d_name[0] == '.')
 			{
-				if (bit & OPTION_a || (bit & OPTION_A
-						&& file_check(read->d_name)))
-					printf("%s%c", read->d_name, c);
+				if (bit & OPTION_a || (bit & OPTION_A &&
+							file_check(read->d_name)))
+				{
+					if (bit & OPTION_l)
+						lprint(size, read->d_name);
+					else
+						printf("%s%c", read->d_name, c);
+				}
 			}
 			else
-				printf("%s%c", read->d_name, c);
-
+			{
+				if (bit & OPTION_l)
+					lprint(size, read->d_name);
+				else
+					printf("%s%c", read->d_name, c);
+			}
 		}
-		if (c != 10)
+		if (c != 10 && !(bit & OPTION_l))
 			printf("\n");
 		if (n_dir > ctr)
 			printf("\n");
@@ -87,30 +93,32 @@ int main(int argc, char *argv[])
 {
 	char *cur_dir = "./";
 	int j = 0, i = 0, ctr = 0, files = 0;
-	int bit = 0, n_dir = argc - 1, num_op = 0;
+	int bit = 0, n_dir = argc - 1, size[4] = {0};
 
 	while (argv[i])
 	{
 		if (i == 0)
 			i += 1;
 		else if (op_check(argv[i]))
-		{
-			bit = parse_options(argv[i++], bit);
-			n_dir -= 1, num_op += 1;
-		}
+			bit = parse_options(argv[i++], bit), n_dir -= 1;
 		else
-			error_hundle(argv[i++], argv[0], &files);
+			error_hundle(argv[i++], argv[0], &files, size);
 	}
+	if (n_dir == 0)
+		error_hundle(cur_dir, argv[0], &files, size);
 	if (files > 0)
 		printf("\n");
 	for (j = 0; argv[j]; j++)
 	{
 		if (n_dir == 0)
-			_ls(bit, cur_dir, n_dir, ctr);
+		{
+			_ls(bit, cur_dir, n_dir, ctr, size);
+			break;
+		}
 		else if (j == 0 || op_check(argv[j]))
 			continue;
 		else
-			_ls(bit, argv[j], n_dir, ++ctr);
+			_ls(bit, argv[j], n_dir, ++ctr, size);
 	}
 	return (0);
 }

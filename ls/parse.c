@@ -1,6 +1,32 @@
 #include "_ls.h"
 
 /**
+ * parse_arg - parse arguments to count number of files
+ * @argv: args to check
+ * Return: number of files
+ */
+int parse_arg(char **argv)
+{
+	int ctr = 0;
+	struct stat buf;
+
+	while (**argv++)
+	{
+		if (*argv[0] == '-')
+			continue;
+		if (lstat(*argv, &buf) == 0)
+		{
+			if (errno == 13)
+				continue;
+			if (!(S_ISDIR(buf.st_mode)))
+				ctr += 1;
+		}
+
+	}
+	return (ctr);
+}
+
+/**
  * op_check - if it is option or not
  * @argv: string to check
  * Return: 1 if found, 0 if not found
