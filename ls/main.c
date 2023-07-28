@@ -23,7 +23,10 @@ void error_hundle(char *dirname, char *command, int *files, int *size)
 		if (S_ISDIR(buf.st_mode))
 			check_length(size, dirname);
 		else
-			printf("%s\n", dirname), *files++;
+		{
+			printf("%s\n", dirname);
+			*files++;
+		}
 	}
 	else
 	{
