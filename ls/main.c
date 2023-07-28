@@ -25,7 +25,7 @@ void error_hundle(char *dirname, char *command, int *files, int *size)
 		else
 		{
 			printf("%s\n", dirname);
-			*files++;
+			*files += 1;
 		}
 	}
 	else
