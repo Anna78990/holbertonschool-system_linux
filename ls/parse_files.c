@@ -49,8 +49,14 @@ void check_length(int *s_list, char *dirname)
 		grp = getgrgid(file.st_gid);
 		lstat(read->d_name, &file);
 		s_list[0] = find_max(s_list[0], len_int(file.st_nlink));
-		s_list[1] = find_max(s_list[1], _strlen(usr->pw_name));
-		s_list[2] = find_max(s_list[2], _strlen(grp->gr_name));
+		if (usr)
+			s_list[1] = find_max(s_list[1], _strlen(usr->pw_name));
+		else
+			s_list[1] = find_max(s_list[1], len_int((int)file.st_uid));
+		if (grp)
+			s_list[2] = find_max(s_list[2], _strlen(grp->gr_name));
+		else
+			s_list[2] = find_max(s_list[2], len_int((int)file.st_gid));
 		s_list[3] = find_max(s_list[3], len_int((int)file.st_size));
 	}
 	closedir(dir);

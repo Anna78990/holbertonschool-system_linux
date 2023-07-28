@@ -64,25 +64,26 @@ void lprint(int *size, char *dirname)
 	struct stat file;
 	struct passwd *usr;
 	struct group *grp;
+	(void)size;
 
 	lstat(dirname, &file);
 	usr = getpwuid(file.st_uid), grp = getgrgid(file.st_gid);
 
-	printf("%c%c%c%c%c%c%c%c%c%c %*lu ",
+	printf("%c%c%c%c%c%c%c%c%c%c %lu ",
 		is_dir(file) ? 'd' : S_ISLNK(file.st_mode) ? 'l' : '-',
 		RUSR, WUSR, XUSR, RGRP, WGRP, XGRP, ROTH, WOTH, XOTH,
-		size[0] - len_int(file.st_nlink), file.st_nlink);
+		file.st_nlink);
 
 	if (usr)
-		printf("%*s ", size[1], usr->pw_name);
+		printf("%s ", usr->pw_name);
 	else
-		printf("%*u ", size[1], file.st_uid);
+		printf("%u ", file.st_uid);
 
 	if (grp)
-		printf("%*s ", size[2], grp->gr_name);
+		printf("%s ", grp->gr_name);
 	else
-		printf("%*u ", size[2], file.st_gid);
-	printf("%*lu %s %s", size[3],
+		printf("%u ", file.st_gid);
+	printf("%lu %s %s",
 			file.st_size, format_time(file), raw_name(dirname));
 	if (S_ISLNK(file.st_mode))
 	{
