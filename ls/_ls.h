@@ -28,27 +28,6 @@
 #define WOTH (file.st_mode & S_IWOTH ? 'w' : '-')
 #define XOTH (file.st_mode & S_IXOTH ? 'x' : '-')
 
-/**
- * struct File - file info object
- * @name: name of file
- * @next: next
- */
-typedef struct File
-{
-	char *name;
-	struct File *next;
-} File;
-
-/**
- * struct File_list - file list
- * @file: pointer to file
- * @next: pointer to next file list
- */
-typedef struct File_list
-{
-	File file;
-	struct File_list *next;
-} File_list;
 
 int parse_arg(char **argv);
 int op_check(char *argv);
@@ -57,13 +36,7 @@ int file_check(char *name);
 int parse_options(char *arg, int bit);
 int _strcmp(char *f, char *s);
 char *_strdup(const char *str);
-void *add_file(char *name, File *ptr);
-void free_files(File *ptr);
-File_list *add_filelist(File_list *ptr);
-void free_file_list(File_list *ptr);
 unsigned int _strlen(char *str);
-void check_length(int *s_list, char *dirname);
-int len_int(int n);
-void lprint(int *size, char *dirname);
+void lprint(char *dirname);
 
 #endif

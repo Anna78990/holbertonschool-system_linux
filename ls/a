@@ -1,0 +1,10 @@
+==12393== Use of uninitialised value of size 8
+==12393==    at 0x48B181B: _itoa_word (_itoa.c:179)
+==12393==    by 0x49AE7D1: __nscd_getpwuid_r (nscd_getpw_r.c:60)
+==12393==    by 0x49384FC: getpwuid_r@@GLIBC_2.2.5 (getXXbyYY_r.c:255)
+==12393==    by 0x4937B4A: getpwuid (getXXbyYY.c:135)
+==12393==    by 0x1096B4: lprint (in /home/vagrant/holbertonschool-system_linux/ls/hls)
+==12393==    by 0x109CB8: _ls (in /home/vagrant/holbertonschool-system_linux/ls/hls)
+==12393==    by 0x109EF2: main (in /home/vagrant/holbertonschool-system_linux/ls/hls)
+==12393==  Uninitialised value was created by a stack allocation
+==12393==    at 0x109514: lprint (in /home/vagrant/holbertonschool-system_linux/ls/hls)

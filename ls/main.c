@@ -5,9 +5,8 @@
  * @dirname: directory name to check if it has error
  * @command: command name
  * @files: pointer to count file
- * @size: size array
  */
-void error_hundle(char *dirname, char *command, int *files, int *size)
+void error_hundle(char *dirname, char *command, int *files)
 {
 	struct stat buf;
 	char er[1024];
@@ -21,7 +20,9 @@ void error_hundle(char *dirname, char *command, int *files, int *size)
 			perror(er);
 		}
 		if (S_ISDIR(buf.st_mode))
-			check_length(size, dirname);
+		{
+			return;
+		}
 		else
 		{
 			printf("%s\n", dirname);
@@ -42,9 +43,8 @@ void error_hundle(char *dirname, char *command, int *files, int *size)
  * @dirname: directory name to use
  * @n_dir: number of directories
  * @ctr: times when the function counted
- * @size: size array
  */
-void _ls(int bit, char *dirname, int n_dir, int ctr, int *size)
+void _ls(int bit, char *dirname, int n_dir, int ctr)
 {
 	DIR *dir;
 	char c = ' ';
@@ -65,7 +65,7 @@ void _ls(int bit, char *dirname, int n_dir, int ctr, int *size)
 							file_check(read->d_name)))
 				{
 					if (bit & OPTION_l)
-						lprint(size, read->d_name);
+						lprint(read->d_name);
 					else
 						printf("%s%c", read->d_name, c);
 				}
@@ -73,7 +73,7 @@ void _ls(int bit, char *dirname, int n_dir, int ctr, int *size)
 			else
 			{
 				if (bit & OPTION_l)
-					lprint(size, read->d_name);
+					lprint(read->d_name);
 				else
 					printf("%s%c", read->d_name, c);
 			}
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 {
 	char *cur_dir = "./";
 	int j = 0, i = 0, ctr = 0, files = 0;
-	int bit = 0, n_dir = argc - 1, size[4] = {0};
+	int bit = 0, n_dir = argc - 1;
 
 	while (argv[i])
 	{
@@ -105,23 +105,23 @@ int main(int argc, char *argv[])
 		else if (op_check(argv[i]))
 			bit = parse_options(argv[i++], bit), n_dir -= 1;
 		else
-			error_hundle(argv[i++], argv[0], &files, size);
+			error_hundle(argv[i++], argv[0], &files);
 	}
 	if (n_dir == 0)
-		error_hundle(cur_dir, argv[0], &files, size);
+		error_hundle(cur_dir, argv[0], &files);
 	if (files > 0)
 		printf("\n");
 	for (j = 0; argv[j]; j++)
 	{
 		if (n_dir == 0)
 		{
-			_ls(bit, cur_dir, n_dir, ctr, size);
+			_ls(bit, cur_dir, n_dir, ctr);
 			break;
 		}
 		else if (j == 0 || op_check(argv[j]))
 			continue;
 		else
-			_ls(bit, argv[j], n_dir, ++ctr, size);
+			_ls(bit, argv[j], n_dir, ++ctr);
 	}
 	return (0);
 }

@@ -1,6 +1,38 @@
 #include "_ls.h"
 
 /**
+ * convert_number - convert int to string
+ * @num: number to convert
+ * Return: string of given number
+ */
+char *convert_number(long int num)
+{
+	static char *array;
+	static char buffer[50];
+	char sign = 0;
+	char *ptr;
+	unsigned long n = num;
+
+	if (num < 0)
+	{
+		n = -num;
+		sign = '-';
+	}
+	array = "0123456789ABCDEF";
+	ptr = &buffer[49];
+	*ptr = '\0';
+
+	do {
+		*--ptr = array[n % 10];
+		n /= 10;
+	} while (n != 0);
+
+	if (sign)
+		*--ptr = sign;
+	return (ptr);
+}
+
+/**
  * raw_name - advance pointer just after slash
  * @fullpath: path which may contain slash
  * Return: correct path
@@ -56,18 +88,18 @@ char is_dir(struct stat file)
 
 /**
  * lprint - print with option l
- * @size: array of sizes which contains maximum length
  * @dirname: directory/file name
  */
-void lprint(int *size, char *dirname)
+void lprint(char *dirname)
 {
-	struct stat file;
-	struct passwd *usr;
-	struct group *grp;
-	(void)size;
+	struct stat file = {0};
+	struct passwd *usr = NULL;
+	struct group *grp = NULL;
+	char buf[256] = {0};
 
 	lstat(dirname, &file);
-	usr = getpwuid(file.st_uid), grp = getgrgid(file.st_gid);
+	usr = getpwuid(file.st_uid);
+	grp = getgrgid(file.st_gid);
 
 	printf("%c%c%c%c%c%c%c%c%c%c %lu ",
 		is_dir(file) ? 'd' : S_ISLNK(file.st_mode) ? 'l' : '-',
@@ -77,18 +109,16 @@ void lprint(int *size, char *dirname)
 	if (usr)
 		printf("%s ", usr->pw_name);
 	else
-		printf("%u ", file.st_uid);
+		printf("%s ", convert_number(file.st_uid));
 
 	if (grp)
 		printf("%s ", grp->gr_name);
 	else
-		printf("%u ", file.st_gid);
+		printf("%s ", convert_number(file.st_gid));
 	printf("%lu %s %s",
 			file.st_size, format_time(file), raw_name(dirname));
 	if (S_ISLNK(file.st_mode))
 	{
-		char buf[256] = {0};
-
 		readlink(dirname, buf, 256);
 		printf(" -> %s", buf);
 	}
