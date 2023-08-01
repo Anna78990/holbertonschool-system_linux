@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define READ_SIZE 80
+#define READ_SIZE 1024
 
 /**
  * struct read_s - structure which keep the information of readed line
