@@ -1,6 +1,10 @@
 #ifndef _GETLINE_H
 #define _GETLINE_H
 
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+
 #define READ_SIZE 80
 
 /**
@@ -15,11 +19,11 @@ typedef struct read_s
 {
 	int fd;
 	char *buf;
+	int idx;
 	int size;
 	struct read_s *next;
 } read_t;
 
 char *_getline(const int fd);
-char *find_line(read_t *rd);
 
 #endif

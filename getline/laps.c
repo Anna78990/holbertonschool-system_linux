@@ -103,7 +103,6 @@ listcars_t *add_car(listcars_t **cars, int *list, size_t size)
  * @size: size or the array
  * Return: always Nothing.
  */
-
 listcars_t *change_state(listcars_t **cars, int *list, size_t size)
 {
 	int i;
@@ -132,7 +131,6 @@ listcars_t *change_state(listcars_t **cars, int *list, size_t size)
  * @size: size or the array
  * Return: 1 or 0
  */
-
 int search_carslist(listcars_t **cars, int *list, size_t size)
 {
 	int i;

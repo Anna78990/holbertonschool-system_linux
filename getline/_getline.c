@@ -1,80 +1,9 @@
-#include <unistd.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <string.h>
+#include <stdio.h>
 #include "_getline.h"
 
-#include <stdio.h>
-
-
-/**
- * free_readers - free reader structs
- * @reader: reader structs to free
- */
-void free_readers(read_t *reader)
-{
-	read_t *tmp;
-
-	while (reader)
-	{
-		tmp = reader;
-		reader = reader->next;
-		if (tmp->buf)
-			free(tmp->buf);
-		free(tmp);
-	}
-}
-
-/**
- * find_line - find line
- * @reader: reader to use
- * Return: gotten line
- */
-char *find_line(read_t *reader)
-{
-	int i, j, size;
-	char *line, *tmp, *buf, *next_line;
-
-	if (reader->size <= 0)
-	{
-		free_readers(reader);
-		return (NULL);
-	}
-	for (i = 0; i < reader->size; i++)
-		if (reader->buf[i] == '\n')
-		{
-			if (i == 0)
-				line = (char *)malloc(sizeof(char) * 1);
-			else
-			{
-				line = (char *)malloc(sizeof(char) * (i + 1));
-				memset(line, '\0', i + 1), memcpy(line, reader->buf, i);
-			}
-			line[i] = '\0', i += 1;
-			buf = (char *)malloc(sizeof(char) * (reader->size - i + 1));
-			memset(buf, '\0', reader->size - i + 1);
-			for (j = 0; j + i < reader->size; j++)
-				buf[j] = reader->buf[i + j];
-			buf[j] = '\0', reader->buf = buf, reader->size = j;
-			return (line);
-		}
-	size = reader->size, line = (char *)malloc(sizeof(char) * (READ_SIZE));
-	reader->size = read(reader->fd, line, READ_SIZE);
-	tmp = (char *)malloc(sizeof(char) * (reader->size + size));
-	memset(tmp, '\0', reader->size + size);
-	memcpy(tmp, reader->buf, size), free(reader->buf);
-	memcpy(tmp + size, line, reader->size);
-	reader->buf = tmp, reader->size = size + reader->size;
-	next_line = find_line(reader);
-	if (next_line != NULL)
-	{
-		free(line);
-		return (next_line);
-	}
-	return (NULL);
-}
+char *write_buf(read_t *reader);
+read_t *get_buf(read_t *reader, int fd);
+char *_strchr(char *s, char c, int len);
 
 /**
  * _getline - getline of given fd
@@ -83,49 +12,176 @@ char *find_line(read_t *reader)
  */
 char *_getline(const int fd)
 {
-	static read_t *reads, *reader;
-	char *buf;
-	size_t bytes;
+	static read_t reads;
+	static char buf[READ_SIZE + 1];
+	read_t *reader = NULL, *tmp = NULL;
+	static size_t len;
+	char *line = NULL;
 
-	if (reader)
-		printf("** now, reader->size = %d**\n", reader->size);
-	else
-		printf("** reader does not exist**\n");
 	if (fd == -1)
 	{
-		free_readers(reader);
-		reads = NULL;
-		reader = NULL;
-		return (NULL);
-	}
-	reads = reader;
-	while (reads)
-	{
-		if (reads->fd == fd)
+		if (reads.buf)
 		{
-			if (reads->size <= 0)
-				reads->size = read(fd, reads->buf, READ_SIZE);
-			return (find_line(reads));
+			free(reads.buf);
+			reads.buf = NULL;
 		}
-		reader = reads;
-		reads = reads->next;
-		free(reader->buf);
-		free(reader);
+		for (reader = reads.next; reader;)
+		{
+			if (reader->buf)
+			{
+				free(reader->buf);
+				reader->buf = NULL;
+			}
+			tmp = reader;
+			reader = reader->next;
+			free(tmp);
+		}
+		memset(&reads, 0, sizeof(reads));
+		memset(buf, 0, len);
+		len = 0;
+		return (NULL);
 	}
-	buf = malloc(sizeof(char) * READ_SIZE);
-	bytes = read(fd, buf, READ_SIZE);
-	if (bytes <= 0)
+	reader = get_buf(&reads, fd);
+	if ((reader == &reads) && len)
 	{
-		free(buf);
-		return (NULL);
+		reader->buf = malloc(len + 1);
+		if (!reader->buf)
+			return (NULL);
+		reader->size = len;
+		memcpy(reader->buf, buf, len);
+		len = 0;
 	}
-	reads = malloc(sizeof(read_t));
-	if (reads == NULL)
+	if (reader)
+		line = write_buf(reader);
+	if ((reader == &reads) && reader->buf)
+	{
+		len = reader->size - reader->idx;
+		memcpy(buf, reader->buf + reader->idx, len);
+		free(reader->buf);
+		reader->buf = NULL;
+		reader->size = reader->idx = 0;
+	}
+	return (line);
+}
+
+/**
+ * write_buf - write the correct string on the buf of reader
+ * @reader: reader to refer
+ * Return: string to return
+ */
+char *write_buf(read_t *reader)
+{
+	char buf[READ_SIZE + 1], *p, *line;
+	ssize_t r = 0;
+
+	p = _strchr(reader->buf + reader->idx, '\n', reader->size);
+	if (!reader->size || reader->idx + 1 == reader->size || !p)
+	{
+		while (1)
+		{
+			r = read(reader->fd, buf, READ_SIZE);
+			if (r < 0 || (r == 0 && !reader->size))
+			{
+				if (reader->buf)
+					free(reader->buf);
+				return (NULL);
+			}
+			if (r == 0)
+			{
+				p = reader->buf + reader->size;
+				break;
+			}
+			reader->buf = realloc(reader->buf, reader->size + r + 1);
+			if (!reader->buf)
+				return (NULL);
+			memcpy(reader->buf + reader->size, buf, r);
+			reader->size += r;
+			p = _strchr(reader->buf + (reader->size - r), '\n', r);
+			if (p)
+			{
+				reader->buf[reader->size] = 0;
+				break;
+			}
+		}
+	}
+	*p = '\0';
+	line = malloc(1 + (p - (reader->buf + reader->idx)));
+	if (!line)
 		return (NULL);
-	reads->fd = fd;
-	reads->buf = buf;
-	reads->size = bytes;
-	reads->next = reader;
-	reader = reads;
-	return (find_line(reads));
+	memcpy(line, reader->buf + reader->idx,
+			1 + (p - (reader->buf + reader->idx)));
+	reader->idx = (p - reader->buf) + 1;
+	if (reader->idx >= reader->size)
+	{
+		reader->idx = reader->size = 0;
+		free(reader->buf);
+		reader->buf = NULL;
+	}
+	return (line);
+}
+
+/**
+ * get_buf - get buf to store read string
+ * @reader: pointer to reader
+ * @fd: file discriptor
+ * Return: pointer to buf
+ */
+read_t *get_buf(read_t *reader, int fd)
+{
+	read_t *r;
+
+	if (!reader->fd && !reader->next)
+	{
+		reader->buf = NULL;
+		reader->fd = fd;
+		return (reader);
+	}
+	else if (fd < reader->fd)
+	{
+		r = malloc(sizeof(*r));
+		if (!r)
+			return (NULL);
+		memcpy(r, reader, sizeof(*reader));
+		memset(reader, 0, sizeof(*reader));
+		reader->buf = NULL;
+		reader->fd = fd;
+		reader->next = r;
+		return (reader);
+	}
+	for (; reader->next && reader->next->fd <= fd; reader = reader->next)
+		;
+	if (reader->fd == fd)
+	{
+		return (reader);
+	}
+	r = malloc(sizeof(*r));
+	if (!r)
+		return (NULL);
+	memset(r, 0, sizeof(*r));
+	r->buf = NULL;
+	r->fd = fd;
+	r->next = reader->next;
+	reader->next = r;
+	return (r);
+}
+/**
+ * *_strchr - locates a character in a string
+ * @s: pointer to the string
+ * @c: character to search
+ * @len: length of string
+ * Return: (&s[i]) or (NULL)
+ */
+char *_strchr(char *s, char c, int len)
+{
+	int i;
+	(void)len;
+
+	if (!s)
+		return (NULL);
+	for (i = 0; i < len; i++)
+	{
+		if (s[i] == c)
+			return (&s[i]);
+	}
+	return (NULL);
 }
