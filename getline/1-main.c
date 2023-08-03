@@ -15,7 +15,7 @@ int main(void)
     int fd;
     char *line;
 
-    fd = open("1-main.c", 0); // 0 = 0_RDONLY
+    fd = open("a", 0); // 0 = 0_RDONLY
     while ((line = _getline(fd)))
     {
         printf("%s\n", line);

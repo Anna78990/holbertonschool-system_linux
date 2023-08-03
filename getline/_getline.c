@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "_getline.h"
+#include "string.h"
 
 char *write_buf(read_t *reader);
 read_t *get_buf(read_t *reader, int fd);
@@ -52,7 +53,14 @@ char *_getline(const int fd)
 		len = 0;
 	}
 	if (reader)
+	{
 		line = write_buf(reader);
+	}
+	if (line)
+	{
+		if (strlen(line) == 1 && line[0] == 10)
+			line[0] = '\0';
+	}
 	if ((reader == &reads) && reader->buf)
 	{
 		len = reader->size - reader->idx;
@@ -80,7 +88,7 @@ char *write_buf(read_t *reader)
 		while (1)
 		{
 			r = read(reader->fd, buf, READ_SIZE);
-			if (r < 0 || (r == 0 && !reader->size))
+			if (r < 0 || (r == 0 && !reader->buf))
 			{
 				if (reader->buf)
 					free(reader->buf);
@@ -96,6 +104,7 @@ char *write_buf(read_t *reader)
 				return (NULL);
 			memcpy(reader->buf + reader->size, buf, r);
 			reader->size += r;
+			reader->l_char = reader->buf[reader->size - 2];
 			p = _strchr(reader->buf + (reader->size - r), '\n', r);
 			if (p)
 			{
@@ -168,17 +177,16 @@ read_t *get_buf(read_t *reader, int fd)
  * *_strchr - locates a character in a string
  * @s: pointer to the string
  * @c: character to search
- * @len: length of string
+ * @length: length of string
  * Return: (&s[i]) or (NULL)
  */
-char *_strchr(char *s, char c, int len)
+char *_strchr(char *s, char c, int length)
 {
 	int i;
-	(void)len;
 
 	if (!s)
 		return (NULL);
-	for (i = 0; i < len; i++)
+	for (i = 0; i < length; i++)
 	{
 		if (s[i] == c)
 			return (&s[i]);

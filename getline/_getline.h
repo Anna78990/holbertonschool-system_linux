@@ -11,8 +11,10 @@
  * struct read_s - structure which keep the information of readed line
  * @fd: file desciptor
  * @buf: buffer of read
- * @bytes: number of bytes read
- *
+ * @idx: index to start
+ * @size: size of bytes
+ * @l_char: last alphabet of the buf
+ * @next: pointer to next
  * Description: Longer description
  */
 typedef struct read_s
@@ -21,6 +23,7 @@ typedef struct read_s
 	char *buf;
 	int idx;
 	int size;
+	char l_char;
 	struct read_s *next;
 } read_t;
 
