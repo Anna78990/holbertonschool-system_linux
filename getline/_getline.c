@@ -1,10 +1,23 @@
 #include <stdio.h>
 #include "_getline.h"
-#include "string.h"
 
 char *write_buf(read_t *reader);
 read_t *get_buf(read_t *reader, int fd);
 char *_strchr(char *s, char c, int len);
+
+/**
+ * _strlen - string length
+ * @str: string to count
+ * Return: length of string, if it does not exist 0
+ */
+int _strlen(char *str)
+{
+	int i;
+
+	for (i = 0; str[i] != '\0'; i++)
+		;
+	return (i);
+}
 
 /**
  * _getline - getline of given fd
@@ -58,7 +71,7 @@ char *_getline(const int fd)
 	}
 	if (line)
 	{
-		if (strlen(line) == 1 && line[0] == 10)
+		if (_strlen(line) == 1 && line[0] == 10)
 			line[0] = '\0';
 	}
 	if ((reader == &reads) && reader->buf)
