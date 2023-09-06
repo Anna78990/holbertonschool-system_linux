@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+""" find and replace the string in a process' mem file """
 
 from sys import argv
 import os
