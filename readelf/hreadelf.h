@@ -25,11 +25,12 @@ typedef struct header
 	Elf64_Shdr s64;
 } header;
 
+
+int print_version(header *header);
 void print_flags(header *header);
 void print_machine(header *header);
 void print_type(header *header);
 int print_header(header *header);
-
 
 void switch_endians(header *header);
 

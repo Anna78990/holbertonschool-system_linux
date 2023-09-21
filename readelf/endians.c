@@ -22,7 +22,7 @@ unsigned int switch_4bt_end(unsigned int n)
 }
 
 /**
- * switch_4bt_end - switches endianness on 8 bytes
+ * switch_8bt_end - switches endianness on 8 bytes
  * @n: number to switch
  * Return: switched bytes
  */
@@ -41,7 +41,7 @@ unsigned long switch_8bt_end(unsigned long n)
 
 
 /**
- * switch_endians_64 - switches endians
+ * switch_endians - switches endians
  * @header: ELF headerb to switch
  */
 void switch_endians(header *header)

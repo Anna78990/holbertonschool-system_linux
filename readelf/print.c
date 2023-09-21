@@ -1,11 +1,11 @@
 #include "hreadelf.h"
 
 /**
- * print_osabi_more - prints ELF osabi more
- * @elf_header: address of elf header struct
+ * print_osabi2 - prints ELF osabi more
+ * @header: address of elf header struct
  * Return: 0 on success else exit_status
  */
-int print_osabi_more(header *header)
+int print_osabi2(header *header)
 {
 	switch (header->e64.e_ident[EI_OSABI])
 	{
@@ -33,7 +33,7 @@ int print_osabi_more(header *header)
 
 /**
  * print_osabi - prints to OS ABI version
- * @elf_header: address of elf header struct
+ * @header: address of elf header struct
  * Return: 0 on success else exit_status
  */
 int print_osabi(header *header)
@@ -69,7 +69,7 @@ int print_osabi(header *header)
 			printf("UNIX - TRU64");
 			break;
 		default:
-			return (print_osabi_more(header));
+			return (print_osabi2(header));
 		break;
 	}
 	printf("\n");
@@ -79,7 +79,7 @@ int print_osabi(header *header)
 
 /**
  * print_class - prints the byte architecture class
- * @elf_header: address of elf header struct
+ * @header: address of elf header struct
  * Return: 0 on success else exit_status
  */
 int print_class(header *header)
@@ -106,7 +106,7 @@ int print_class(header *header)
 
 /**
  * print_data - prints the endianness type
- * @elf_header: address of elf header struct
+ * @header: address of elf header struct
  * Return: 0 on success else exit_status
  */
 int print_data(header *header)
@@ -131,27 +131,10 @@ int print_data(header *header)
 	return (0);
 }
 
-/**
- * print_version - prints the ELF version
- * @elf_header: address of elf header struct
- * Return: 0 on success else exit_status
- */
-int print_version(header *header)
-{
-	printf("  Version:                           %d ",
-		header->e64.e_ident[EI_VERSION]);
-	if (header->e64.e_ident[EI_VERSION] == EV_CURRENT)
-		printf("(current)");
-	else if (header->e64.e_ident[EI_VERSION] != EV_NONE)
-		printf("<unknown: %x", header->e64.e_ident[EI_VERSION]);
-	printf("\n");
-	return (0);
-}
-
 
 /**
  * print_header - calls all the print functions
- * @elf_header: address of elf header struct
+ * @header: address of elf header struct
  * Return: 0 on success else exit_status
  */
 int print_header(header *header)
@@ -172,7 +155,7 @@ int print_header(header *header)
 	else if (header->e64.e_ident[EI_VERSION] != EV_NONE)
 		printf("<unknown: %x", header->e64.e_ident[EI_VERSION]);
 	printf("\n");
-	print_osabi(&header);
+	print_osabi(header);
 	printf("  ABI Version:                       %d\n",
 			header->e64.e_ident[EI_ABIVERSION]);
 	print_type(header);
@@ -186,7 +169,7 @@ int print_header(header *header)
 		header->e32.e_entry : header->e64.e_entry);
 	printf("  Start of program headers:          %lu (bytes into file)\n",
 		(header->e64.e_ident[EI_CLASS] == ELFCLASS32) ?
-		header->e32.e_phoff : header->e64.e_phoff);	
+		header->e32.e_phoff : header->e64.e_phoff);
 	printf("  Start of section headers:          %lu (bytes into file)\n",
 		(header->e64.e_ident[EI_CLASS] == ELFCLASS32) ?
 		header->e32.e_shoff : header->e64.e_shoff);
