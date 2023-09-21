@@ -10,8 +10,27 @@
 #include <unistd.h>
 #include <limits.h>
 
+/**
+ * struct header - struct containing 32 and 64 bit ELF header information
+ * @e32: 32-bit ELF header
+ * @e64: 64-bit ELF header
+ * @s32: 32-bit ELF section header
+ * @s64: 64-bit ELF section header
+ */
+typedef struct header
+{
+	Elf32_Ehdr e32;
+	Elf64_Ehdr e64;
+	Elf32_Shdr s32;
+	Elf64_Shdr s64;
+} header;
 
-void switch_all_endians_32(Elf32_Ehdr *header);
-void switch_all_endians_64(Elf64_Ehdr *header);
+void print_flags(header *header);
+void print_machine(header *header);
+void print_type(header *header);
+int print_header(header *header);
+
+
+void switch_endians(header *header);
 
 #endif

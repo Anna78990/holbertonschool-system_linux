@@ -38,51 +38,45 @@ unsigned long switch_8bt_end(unsigned long n)
 		((n << 56) & 0xff00000000000000));
 }
 
-/**
- * switch_endians_32 - switches endians
- * @header: ELF headerb to switch
- */
-void switch_all_endians_32(Elf32_Ehdr *header)
-{
-	if (header.e_ident[EI_DATA] == ELFDATA2MSB)
-	{
-		header.e_machine = switch_2bt_end(header.e_machine);
-		header.e_version = switch_4bt_end(header.e_version);
-		header.e_type = switch_2bt_end(header.e_type);
-		header.e_flags = switch_4bt_end(header.e_flags);
-		header.e_ehsize = switch_2bt_end(header.e_ehsize);
-		header.e_phentsize = switch_2bt_end(header.e_phentsize);
-		header.e_phnum = switch_2bt_end(header.e_phnum);
-		header.e_shentsize = switch_2bt_end(header.e_shentsize);
-		header.e_shnum = switch_2bt_end(header.e_shnum);
-		header.e_shoff = switch_4bt_end(header.e_shoff);
-		header.e_phoff = switch_4bt_end(header.e_phoff);
-		header.e_entry = switch_4bt_end(header.e_entry);
-		header.e_shstrndx = switch_2bt_end(header.e_shstrndx);
-	}
-}
 
 
 /**
  * switch_endians_64 - switches endians
  * @header: ELF headerb to switch
  */
-void switch_all_endians_64(Elf64_Ehdr *header)
+void switch_endians(header *header)
 {
-	if (header.e_ident[EI_DATA] == ELFDATA2MSB)
+	if (header->e64.e_ident[EI_DATA] == ELFDATA2MSB)
 	{
-		header.e_machine = switch_2bt_end(header.e_machine);
-		header.e_version = switch_4bt_end(header.e_version);
-		header.e_type = switch_2bt_end(header.e_type);
-		header.e_flags = switch_4bt_end(header.e_flags);
-		header.e_ehsize = switch_2bt_end(header.e_ehsize);
-		header.e_phentsize = switch_2bt_end(header.e_phentsize);
-		header.e_phnum = switch_2bt_end(header.e_phnum);
-		header.e_shentsize = switch_2bt_end(header.e_shentsize);
-		header.e_shnum = switch_2bt_end(header.e_shnum);
-		header.e_shoff = switch_8bt_end(header.e_shoff);
-		header.e_phoff = switch_8bt_end(header.e_phoff);
-		header.e_entry = switch_8bt_end(header.e_entry);
-		header.e_shstrndx = switch_2bt_end(header.e_shstrndx);
+		header->e64.e_machine = switch_2bt_end(header->e64.e_machine);
+		header->e64.e_version = switch_4bt_end(header->e64.e_version);
+		header->e64.e_type = switch_2bt_end(header->e64.e_type);
+		header->e64.e_flags = switch_4bt_end(header->e64.e_flags);
+		header->e64.e_ehsize = switch_2bt_end(header->e64.e_ehsize);
+		header->e64.e_phentsize = switch_2bt_end(header->e64.e_phentsize);
+		header->e64.e_phnum = switch_2bt_end(header->e64.e_phnum);
+		header->e64.e_shentsize = switch_2bt_end(header->e64.e_shentsize);
+		header->e64.e_shnum = switch_2bt_end(header->e64.e_shnum);
+		header->e64.e_shoff = switch_8bt_end(header->e64.e_shoff);
+		header->e64.e_phoff = switch_8bt_end(header->e64.e_phoff);
+		header->e64.e_entry = switch_8bt_end(header->e64.e_entry);
+		header->e64.e_shstrndx = switch_2bt_end(header->e64.e_shstrndx);
+	}
+	if ((header->e64.e_ident[EI_DATA] == ELFDATA2MSB) &&
+			(header->e64.e_ident[EI_CLASS] == ELFCLASS32))
+	{
+		header->e32.e_machine = switch_2bt_end(header->e32.e_machine);
+		header->e32.e_version = switch_4bt_end(header->e32.e_version);
+		header->e32.e_type = switch_2bt_end(header->e32.e_type);
+		header->e32.e_flags = switch_4bt_end(header->e32.e_flags);
+		header->e32.e_ehsize = switch_2bt_end(header->e32.e_ehsize);
+		header->e32.e_phentsize = switch_2bt_end(header->e32.e_phentsize);
+		header->e32.e_phnum = switch_2bt_end(header->e32.e_phnum);
+		header->e32.e_shentsize = switch_2bt_end(header->e32.e_shentsize);
+		header->e32.e_shnum = switch_2bt_end(header->e32.e_shnum);
+		header->e32.e_shoff = switch_4bt_end(header->e32.e_shoff);
+		header->e32.e_phoff = switch_4bt_end(header->e32.e_phoff);
+		header->e32.e_entry = switch_4bt_end(header->e32.e_entry);
+		header->e32.e_shstrndx = switch_2bt_end(header->e32.e_shstrndx);
 	}
 }

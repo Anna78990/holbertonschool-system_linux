@@ -23,9 +23,9 @@ int main(int argc, char **argv)
 {
 	int fd, exit_status = 0;
 	size_t r;
-	Elf64_Ehdr eh_64;
+	header h;
 
-	memset(&eh_64, 0, sizeof(eh_64));
+	memset(&h, 0, sizeof(h));
 
 	if (argc != 2)
 		return (EXIT_FAILURE);
@@ -34,22 +34,20 @@ int main(int argc, char **argv)
 	if (fd == -1)
 		return (EXIT_FAILURE);
 
-	r = read(fd, &eh_64, sizeof(eh_64));
-	if (r != sizeof(eh_64) || check_magic((char *)&eh_64))
+	r = read(fd, &h.e64, sizeof(h.e64));
+	if (r != sizeof(h.e64) || check_magic((char *)&h.e64))
 		return (EXIT_FAILURE);
 	else
 	{
-		if (eh_64.e_ident[EI_CLASS] == ELFCLASS32)
+		if (h.e64.e_ident[EI_CLASS] == ELFCLASS32)
 		{
 			lseek(fd, 0, SEEK_SET);
-			r = read(fd, &eh_32, sizeof(eh_32));
-			if (r != sizeof(eh_32) || check_magic((char *)&eh_32))
+			r = read(fd, &h.e32, sizeof(h.e32));
+			if (r != sizeof(h.e32) || check_magic((char *)&h.e32))
 				return (EXIT_FAILURE);
-			switch_all_endian(&eh_32);
 		}
-		else
-			switch_all_endian(&elf_header);
-		print_header(&elf_header);
+		switch_endians(&h);
+		print_header(&h);
 	}
 
 	close(fd);
