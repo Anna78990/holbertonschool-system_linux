@@ -31,10 +31,11 @@ int main(int argc, char **argv)
 
 	fd = open(argv[1], 0);
 	if (fd == -1)
+	{
+		printf("There are no program headers in this file.");
 		return (EXIT_FAILURE);
-
+	}
 	r = read(fd, &h.e64, sizeof(h.e64));
-
 	if (r != sizeof(h.e64))
 	{
 		return (EXIT_FAILURE);
