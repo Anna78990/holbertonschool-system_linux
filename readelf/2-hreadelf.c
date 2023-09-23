@@ -1,5 +1,7 @@
 #include "hreadelf.h"
 
+#define NO_MAGIC "There are no program headers in this file."
+
 /**
  * check_magic - checks if header matches magic bytes
  * @header: elf header
@@ -31,10 +33,7 @@ int main(int argc, char **argv)
 
 	fd = open(argv[1], 0);
 	if (fd == -1)
-	{
-		printf("There are no program headers in this file.");
 		return (EXIT_FAILURE);
-	}
 	r = read(fd, &h.e64, sizeof(h.e64));
 	if (r != sizeof(h.e64))
 	{
@@ -47,7 +46,10 @@ int main(int argc, char **argv)
 			lseek(fd, 0, SEEK_SET);
 			r = read(fd, &h.e32, sizeof(h.e32));
 			if (r != sizeof(h.e32) || check_magic((char *)&h.e32))
+			{
+				fprintf(stderr, NO_MAGIC);
 				return (EXIT_FAILURE);
+			}
 		}
 		switch_endians(&h);
 		print_program(&h, fd);
