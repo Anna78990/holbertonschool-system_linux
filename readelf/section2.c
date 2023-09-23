@@ -62,13 +62,9 @@ char *get_sec_type(unsigned int sh_type)
 char *get_sec_flags(header *h, size_t i)
 {
 	static char buf[32];
-	unsigned long flags = 0;
+	unsigned long flags = GETS(i, sh_flags);
 	char *p = buf;
 
-	if (h->e64.e_ident[EI_DATA] == ELFDATA2MSB)
-		flags = h->s32[i].sh_flags;
-	else
-		flags = h->s64[i].sh_flags;
 
 	if (flags & SHF_WRITE)
 		*p++ = 'W';
@@ -150,3 +146,4 @@ void print_section64(header *h, char *strings)
 		    GETS(i, sh_addralign));
 	}
 }
+
