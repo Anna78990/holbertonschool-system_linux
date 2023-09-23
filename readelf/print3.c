@@ -19,49 +19,27 @@ int print_version(header *header)
 
 /**
  * get_e_type - gets the file type
- * @header: the internal header
+ * @h: the internal header
  * Return: string file type
  */
-char *get_e_type(header *header)
+char *get_e_type(header *h)
 {
 	static char buf[100];
 
-	switch (header->e64.e_ident[EI_CLASS])
+	switch (GETE(e_type))
 	{
-		case ELFCLASS32:
-			switch (header->e32.e_type)
-			{
-				case ET_NONE:
-					return ("NONE (None)");
-				case ET_REL:
-					return ("REL (Relocatable file)");
-				case ET_EXEC:
-					return ("EXEC (Executable file)");
-				case ET_DYN:
-					return ("DYN (Shared object file)");
-				case ET_CORE:
-					return ("CORE (Core file)");
-				default:
-					sprintf(buf, "<unknown>: %x",
-							header->e32.e_type);
-			}
-		case ELFCLASS64:
-			switch (header->e64.e_type)
-			{
-				case ET_NONE:
-					return ("NONE (None)");
-				case ET_REL:
-					return ("REL (Relocatable file)");
-				case ET_EXEC:
-					return ("EXEC (Executable file)");
-				case ET_DYN:
-					return ("DYN (Shared object file)");
-				case ET_CORE:
-					return ("CORE (Core file)");
-				default:
-					sprintf(buf, "<unknown>: %x",
-							header->e64.e_type);
-			}
+		case ET_NONE:
+			return ("NONE (None)");
+		case ET_REL:
+			return ("REL (Relocatable file)");
+		case ET_EXEC:
+			return ("EXEC (Executable file)");
+		case ET_DYN:
+			return ("DYN (Shared object file)");
+		case ET_CORE:
+			return ("CORE (Core file)");
+		default:
+			sprintf(buf, "<unknown>: %x", GETE(e_type));
 	}
 	return (buf);
 }

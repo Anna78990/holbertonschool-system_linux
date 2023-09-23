@@ -26,7 +26,6 @@ int main(int argc, char **argv)
 	header h;
 
 	memset(&h, 0, sizeof(h));
-
 	if (argc != 2)
 		return (EXIT_FAILURE);
 
@@ -35,6 +34,7 @@ int main(int argc, char **argv)
 		return (EXIT_FAILURE);
 
 	r = read(fd, &h.e64, sizeof(h.e64));
+
 	if (r != sizeof(h.e64) || check_magic((char *)&h.e64))
 	{
 		return (EXIT_FAILURE);
@@ -49,9 +49,11 @@ int main(int argc, char **argv)
 				return (EXIT_FAILURE);
 		}
 		switch_endians(&h);
-		print_header(&h);
+		print_section_headers(&h, fd);
 	}
 
+	free(h.s32);
+	free(h.s64);
 	close(fd);
 	return (0);
 }

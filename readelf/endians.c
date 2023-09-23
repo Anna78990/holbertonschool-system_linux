@@ -80,3 +80,48 @@ void switch_endians(header *header)
 		header->e32.e_shstrndx = switch_2bt_end(header->e32.e_shstrndx);
 	}
 }
+
+
+/**
+ * switch_end_sec - switches all endians
+ * @header: pointer to struct header
+ * @i: index of the section
+ */
+void switch_end_sec(header *header, size_t i)
+{
+	if (header->e64.e_ident[EI_DATA] == ELFDATA2MSB)
+	{
+		header->s64[i].sh_name = switch_4bt_end(header->s64[i].sh_name);
+		header->s64[i].sh_type = switch_4bt_end(header->s64[i].sh_type);
+		header->s64[i].sh_flags =
+			switch_8bt_end(header->s64[i].sh_flags);
+		header->s64[i].sh_addr = switch_8bt_end(header->s64[i].sh_addr);
+		header->s64[i].sh_offset =
+			switch_8bt_end(header->s64[i].sh_offset);
+		header->s64[i].sh_size = switch_8bt_end(header->s64[i].sh_size);
+		header->s64[i].sh_link = switch_4bt_end(header->s64[i].sh_link);
+		header->s64[i].sh_info = switch_4bt_end(header->s64[i].sh_info);
+		header->s64[i].sh_addralign =
+			switch_8bt_end(header->s64[i].sh_addralign);
+		header->s64[i].sh_entsize =
+			switch_8bt_end(header->s64[i].sh_entsize);
+	}
+	if ((header->e64.e_ident[EI_DATA] == ELFDATA2MSB) &&
+			(header->e64.e_ident[EI_CLASS] == ELFCLASS32))
+	{
+		header->s32[i].sh_name = switch_4bt_end(header->s32[i].sh_name);
+		header->s32[i].sh_type = switch_4bt_end(header->s32[i].sh_type);
+		header->s32[i].sh_flags =
+			switch_4bt_end(header->s32[i].sh_flags);
+		header->s32[i].sh_addr = switch_4bt_end(header->s32[i].sh_addr);
+		header->s32[i].sh_offset =
+			switch_4bt_end(header->s32[i].sh_offset);
+		header->s32[i].sh_size = switch_4bt_end(header->s32[i].sh_size);
+		header->s32[i].sh_link = switch_4bt_end(header->s32[i].sh_link);
+		header->s32[i].sh_info = switch_4bt_end(header->s32[i].sh_info);
+		header->s32[i].sh_addralign =
+			switch_4bt_end(header->s32[i].sh_addralign);
+		header->s32[i].sh_entsize =
+			switch_4bt_end(header->s32[i].sh_entsize);
+	}
+}
