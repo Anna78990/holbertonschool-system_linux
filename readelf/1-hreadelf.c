@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 
 	r = read(fd, &h.e64, sizeof(h.e64));
 
-	if (r != sizeof(h.e64) || check_magic((char *)&h.e64))
+	if (r != sizeof(h.e64))
 	{
 		return (EXIT_FAILURE);
 	}
