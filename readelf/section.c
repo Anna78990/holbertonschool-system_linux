@@ -8,22 +8,16 @@
  */
 void read_section_headers(header *h, int fd)
 {
-	size_t i = 0, r, read_size;
+	size_t i = GETE(e_shnum), r;
 	char *headers;
+	size_t read_size = GETE(e_shentsize) * GETE(e_shnum);
 
-	if (h->e64.e_ident[EI_CLASS] == ELFCLASS32)
-		i = h->e32.e_shnum, read_size = (h->e32.e_shentsize * i);
-	else
-		i = h->e64.e_shnum, read_size = (h->e64.e_shentsize * i);
 	if (!i)
 		return;
 	headers = calloc(i, read_size * i);
 	if (!headers)
 		exit(1);
-	if (h->e64.e_ident[EI_CLASS] == ELFCLASS32)
-		lseek(fd, h->e32.e_shoff, SEEK_SET);
-	else
-		lseek(fd, h->e64.e_shoff, SEEK_SET);
+	lseek(fd, GETE(e_shoff), SEEK_SET);
 	r = read(fd, headers, read_size);
 	if (r < read_size)
 		exit(1);
