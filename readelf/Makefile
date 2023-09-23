@@ -9,6 +9,9 @@ SRC1 = 1-hreadelf.c endians.c section.c section2.c
 OBJ1 = $(SRC1:.c=.o)
 NAME1 = 1-hreadelf
 
+SRC2 = 2-hreadelf.c endians.c print3.c program.c program2.c section.c section2.c
+OBJ2 = $(SRC2:.c=.o)
+NAME2 = 2-hreadelf
 
 .PHONY: all clean oclean flcean re
 
@@ -20,4 +23,5 @@ all: $(NAME0) $(NAME1) $(NAME2)
 1-hreadelf: hreadelf.h $(OBJ1)
 	$(CC) $(OBJ1) -o $(NAME1)
 
-
+2-hreadelf: hreadelf.h $(OBJ2)
+	$(CC) $(OBJ2) -o $(NAME2)
