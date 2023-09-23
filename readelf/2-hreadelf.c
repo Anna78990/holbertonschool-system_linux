@@ -30,7 +30,6 @@ int main(int argc, char **argv)
 	memset(&h, 0, sizeof(h));
 	if (argc != 2)
 		return (EXIT_FAILURE);
-
 	fd = open(argv[1], 0);
 	if (fd == -1)
 		return (EXIT_FAILURE);
@@ -58,7 +57,6 @@ int main(int argc, char **argv)
 		switch_endians(&h);
 		print_program(&h, fd);
 	}
-
 	free(h.s32);
 	free(h.s64);
 	free(h.p32);
