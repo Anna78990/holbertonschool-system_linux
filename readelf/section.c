@@ -60,7 +60,9 @@ int print_section_headers(header *h, int fd)
 		print_section64(h, str);
 	printf("%s", KEY_FLAG);
 	if (h->e64.e_ident[EI_CLASS] == ELFCLASS64)
-		printf(", l (large)");
+		printf(", l (large)\n");
+	else
+		printf("\n");
 	free(str);
 	return (0);
 }
