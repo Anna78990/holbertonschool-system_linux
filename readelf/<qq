@@ -11,6 +11,13 @@
 #include <limits.h>
 #include <stddef.h>
 
+
+#define KEY_FLAG \
+	"Key to Flags:\n" \
+	"  W (write), A (alloc), X (execute), M (merge), S (strings)\n" \
+	"  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)\n" \
+	"  O (extra OS processing required) o (OS specific), p (processor specific)\n"
+
 #define TITLE_32 \
 	"  [Nr] Name              Type            Addr" \
 	"     Off    Size   ES Flg Lk Inf Al\n"

@@ -1,5 +1,10 @@
 #include "hreadelf.h"
 
+#define KEY_FLAG \
+	"Key to Flags:\n" \
+	"  W (write), A (alloc), X (execute), M (merge), S (strings)%s\n" \
+	"  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)\n" \
+	"  O (extra OS processing required) o (OS specific), p (processor specific)\n"
 
 /**
  * read_section_headers - reads the section headers into data
@@ -58,9 +63,8 @@ int print_section_headers(header *h, int fd)
 		print_section32(h, str);
 	else
 		print_section64(h, str);
-	printf("%s", KEY_FLAG);
-	if (h->e64.e_ident[EI_CLASS] != ELFCLASS32)
-		printf(", l (large)");
+	printf(KEY_FLAG, (h->e64.e_ident[EI_CLASS] == ELFCLASS32) ?
+		"" : ", l (large)");
 	free(str);
 	return (0);
 }
