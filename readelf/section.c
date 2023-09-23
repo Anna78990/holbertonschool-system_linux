@@ -59,7 +59,7 @@ int print_section_headers(header *h, int fd)
 	else
 		print_section64(h, str);
 	printf("%s", KEY_FLAG);
-	if (h->e64.e_ident[EI_CLASS] == ELFCLASS64)
+	if (h->e64.e_ident[EI_CLASS] != ELFCLASS32)
 		printf(", l (large)");
 	free(str);
 	return (0);
