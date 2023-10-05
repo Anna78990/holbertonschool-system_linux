@@ -16,7 +16,7 @@ asm_strstr:
 	test rax, rax
 	jnz end
 	inc rdi
-	cmp BYTE [rdi], 0
+	cmp byte [rdi], 0
 	jz end
 	jmp loop
 
