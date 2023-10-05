@@ -1,4 +1,4 @@
-global asm_strchr
+global asm_strstr
 section .text
 
 asm_strstr:
