@@ -8,8 +8,8 @@
 
 int handle_signal(void);
 void (*current_handler_signal(void))(int);
-void (*current_handler_signal(void))(int);
 void set_print_hello(void);
 int handle_sigaction(void);
+void (*current_handler_sigaction(void))(int);
 
 #endif
