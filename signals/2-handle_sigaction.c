@@ -1,4 +1,3 @@
-#define _POSIX_C_SOURCE 200809L
 #include "signals.h"
 
 /**
@@ -8,6 +7,7 @@
 void sigint_handler(int signum)
 {
 	printf("Gotcha! [%d]\n", signum);
+	fflush(stdout);
 }
 
 /**
