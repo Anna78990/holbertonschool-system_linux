@@ -1,0 +1,58 @@
+
+Write a function that set a handler for the signal SIGINT
+
+Prototype: int handle_sigaction(void);
+Your function must return 0 on success, or -1 on error
+The program should print Gotcha! [<signum>] followed by a new line, every time Control-C is pressed (See example below)
+where <signum> must be replaced with the signal number that was caught
+signal(2) is not allowed
+
+---
+file to use: 2-main.c
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+
+#include "signals.h"
+
+/**
+ * main - Entry point
+ *
+ * Return: EXIT_SUCCESS or EXIT_FAILURE
+ */
+int main(void)
+{
+    int i;
+
+    if (handle_sigaction() == -1)
+    {
+        printf("Failure\n");
+        return (EXIT_FAILURE);
+    }
+    for (i = 0; ; i++)
+    {
+        printf("[%d] Wait for it ...\n", i);
+        sleep(1);
+    }
+    return (EXIT_SUCCESS);
+}
+
+----
+output I want:
+alex@~/signals$ gcc -Wall -Wextra -Werror -pedantic 2-main.c 2-handle_sigaction.c -o 2-handle_sigaction
+alex@~/signals$ ./2-handle_sigaction
+[0] Wait for it ...
+[1] Wait for it ...
+^CGotcha! [2]
+[2] Wait for it ...
+[3] Wait for it ...
+^CGotcha! [2]
+[4] Wait for it ...
+^CGotcha! [2]
+[5] Wait for it ...
+^CGotcha! [2]
+[6] Wait for it ...
+[7] Wait for it ...
+^CGotcha! [2]
+[8] Wait for it ...
+^\Quit (core dumped)
