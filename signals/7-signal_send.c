@@ -10,7 +10,7 @@
  */
 int main(int argc, char *argv[])
 {
-	pid_t target_pid = atoi(argv[1]);
+	pid_t target_pid;
 
 	if (argc != 2)
 	{
@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
 		return (EXIT_FAILURE);
 	}
 
+	target_pid = atoi(argv[1]);
 	if (kill(target_pid, SIGINT) == 0)
 	{
 		return (EXIT_SUCCESS);
