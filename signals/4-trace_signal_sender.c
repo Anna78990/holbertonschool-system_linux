@@ -8,9 +8,10 @@
  */
 void sigquit_handler(int sig, siginfo_t *info, void *context)
 {
+	pid_t sender_pid;
+
 	(void)sig;
 	(void)context;
-	pid_t sender_pid;
 
 	sender_pid = info->si_pid;
 	printf("SIGQUIT sent by %d\n", sender_pid);
