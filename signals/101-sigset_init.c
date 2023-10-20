@@ -8,12 +8,14 @@
  */
 int sigset_init(sigset_t *set, int *signals)
 {
+	int i;
+
 	if (set == NULL || signals == NULL)
 		return (-1);
 
 	sigemptyset(set);
 
-	for (int i = 0; signals[i] != 0; i++)
+	for (i = 0; signals[i] != 0; i++)
 		if (sigaddset(set, signals[i]) != 0)
 			return (-1);
 
