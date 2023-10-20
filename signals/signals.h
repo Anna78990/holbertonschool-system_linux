@@ -1,7 +1,6 @@
 #ifndef SIGNALS_H
 #define SIGNALS_H
 
-
 #include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -17,5 +16,6 @@ int pid_exist(pid_t pid);
 void all_in_one(void);
 int sigset_init(sigset_t *set, int *signals);
 int signals_block(int *signals);
+int signals_unblock(int *signals);
 
 #endif
