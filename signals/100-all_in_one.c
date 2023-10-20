@@ -22,7 +22,7 @@ void all_in_one(void)
 	int signum;
 
 	memset(&sa, 0, sizeof(sa));
-	sa.sa_flags = SA_SIGINFO;
+	sa.sa_flags |= SA_SIGINFO;
 	sa.sa_sigaction = signal_handler;
 
 	for (signum = 0; signum < 64; signum++)
