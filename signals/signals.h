@@ -1,6 +1,7 @@
 #ifndef SIGNALS_H
 #define SIGNALS_H
 
+
 #include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -14,5 +15,7 @@ void (*current_handler_sigaction(void))(int);
 int trace_signal_sender(void);
 int pid_exist(pid_t pid);
 void all_in_one(void);
+int sigset_init(sigset_t *set, int *signals);
+
 
 #endif
