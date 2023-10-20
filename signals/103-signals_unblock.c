@@ -1,4 +1,5 @@
 #include <signal.h>
+#include <stddef.h>
 
 /**
  * signals_unblock - Unblock a set of signals
