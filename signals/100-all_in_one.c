@@ -25,6 +25,6 @@ void all_in_one(void)
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = signal_handler;
 
-	for (signum = 0; signum < NSIG; signum++)
+	for (signum = 0; signum < 64; signum++)
 		sigaction(signum, &sa, NULL);
 }
