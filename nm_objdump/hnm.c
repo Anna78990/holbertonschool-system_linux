@@ -44,7 +44,7 @@ int process_file(char *file_name, int multiple, char **argv)
 {
 	int fd, exit_status = 0;
 	size_t r, num_printed = 0;
-	elf_t elf_header;
+	header elf_header;
 	(void)multiple;
 
 	memset(&elf_header, 0, sizeof(elf_header));
@@ -74,7 +74,7 @@ int process_file(char *file_name, int multiple, char **argv)
 		/*if (multiple)
 			printf("\n%s:\n", file_name);
 		*/
-		switch_all_endian(&elf_header);
+		switch_endians(&elf_header);
 		exit_status = print_all_symbol_tables(&elf_header, fd, &num_printed);
 		if (!num_printed)
 			fprintf(stderr, "%s: %s: no symbols\n", argv[0], file_name);

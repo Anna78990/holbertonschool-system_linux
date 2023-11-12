@@ -14,7 +14,7 @@
  * Return: 0 on success else exit_status
  */
 /*
-int print_section_headers_full(elf_t *elf_header, int fd)
+int print_section_headers_full(header *elf_header, int fd)
 {
 	char *string_table;
 	size_t i;
@@ -28,7 +28,7 @@ int print_section_headers_full(elf_t *elf_header, int fd)
 		EGET(e_shnum), EGET(e_shoff));
 	read_section_headers(elf_header, fd);
 	for (i = 0; i < EGET(e_shnum); i++)
-		switch_all_endian_section(elf_header, i);
+		switch_endians_section(elf_header, i);
 	string_table = read_string_table(elf_header, fd);
 	printf("\nSection Headers:\n");
 	if (IS_32(elf_header->e64))
@@ -45,7 +45,7 @@ int print_section_headers_full(elf_t *elf_header, int fd)
  * @elf_header: the internal header
  * @fd: file descriptor to read
  */
-void read_section_headers(elf_t *elf_header, int fd)
+void read_section_headers(header *elf_header, int fd)
 {
 	size_t i = EGET(e_shnum), r;
 	char *headers;
@@ -72,7 +72,7 @@ void read_section_headers(elf_t *elf_header, int fd)
  * @fd: file descriptor to read
  * Return: pointer to beginning of table
  */
-char *read_string_table(elf_t *elf_header, int fd)
+char *read_string_table(header *elf_header, int fd)
 {
 	char *str;
 
