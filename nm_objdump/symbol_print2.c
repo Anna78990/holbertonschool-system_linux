@@ -50,12 +50,12 @@ char *read_symbol_string_table(header *h, int fd, int i)
 
 
 /**
- * get_nm_type64 - gets type of symbol in one char
+ * symbol_type4 - gets type of symbol in one char
  * @sym: the symbol struct
  * @shdr: the array of section header structs
  * Return: the char type
  */
-char get_nm_type64(Elf64_Sym sym, Elf64_Shdr *shdr)
+char symbol_type4(Elf64_Sym sym, Elf64_Shdr *shdr)
 {
 	char c;
 
@@ -94,12 +94,12 @@ char get_nm_type64(Elf64_Sym sym, Elf64_Shdr *shdr)
 }
 
 /**
- * get_nm_type32 - gets type of symbol in one char
+ * symbol_type2 - gets type of symbol in one char
  * @sym: the symbol struct
  * @shdr: the array of section header structs
  * Return: the char type
  */
-char get_nm_type32(Elf32_Sym sym, Elf32_Shdr *shdr)
+char symbol_type2(Elf32_Sym sym, Elf32_Shdr *shdr)
 {
 	char  c;
 

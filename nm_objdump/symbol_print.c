@@ -23,13 +23,13 @@ size_t print_symbol_table32(header *h, char *string_table,
 		if ((GETSYM(i, st_info) & 0xf) == STT_SECTION ||
 			(GETSYM(i, st_info) & 0xf) == STT_FILE || !i)
 			continue;
-		if (get_nm_type32(h->sym32[i], h->s32) != 'U' &&
-			get_nm_type32(h->sym32[i], h->s32) != 'w')
+		if (symbol_type2(h->sym32[i], h->s32) != 'U' &&
+			symbol_type2(h->sym32[i], h->s32) != 'w')
 			printf("%8.8lx ", GETSYM(i, st_value));
 		else
 			printf("%8s ", "");
 		printf("%c %s\n",
-			get_nm_type32(h->sym32[i], h->s32),
+			symbol_type2(h->sym32[i], h->s32),
 			sym_string_table + GETSYM(i, st_name));
 		num_printed++;
 	}
@@ -56,13 +56,13 @@ size_t print_symbol_table64(header *h, char *string_table,
 		if ((GETSYM(i, st_info) & 0xf) == STT_SECTION ||
 			(GETSYM(i, st_info) & 0xf) == STT_FILE || !i)
 			continue;
-		if (get_nm_type64(h->sym64[i], h->s64) != 'U' &&
-			get_nm_type64(h->sym64[i], h->s64) != 'w')
+		if (symbol_type4(h->sym64[i], h->s64) != 'U' &&
+			symbol_type4(h->sym64[i], h->s64) != 'w')
 			printf("%16.16lx ", GETSYM(i, st_value));
 		else
 			printf("%16s ", "");
 		printf("%c %s\n",
-			get_nm_type64(h->sym64[i], h->s64),
+			symbol_type4(h->sym64[i], h->s64),
 			sym_string_table + GETSYM(i, st_name));
 		num_printed++;
 	}

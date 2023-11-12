@@ -1,0 +1,162 @@
+#include "hreadelf.h"
+
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+/**
+ * dump_section - dumps just one section
+ * @h: pointer to elf header struct
+ * @fd: the file descriptor of thefile
+ * @i: section index of current symbol table
+ * @string_table: the section header string_table
+ * Return: number of symbols printed
+ */
+size_t dump_section(header *h, int fd, size_t i, char *string_table)
+{
+	size_t num = 0, i_off = 0, j, j_max, addr_size;
+	unsigned char *data;
+	char buf[32] = {0};
+
+	printf("Contents of section %s:\n", string_table + GETS(i, sh_name));
+	data = read_data(h, fd, GETS(i, sh_offset), GETS(i, sh_size));
+	if (!data)
+		return (0);
+	addr_size = MAX(4, sprintf(buf, "%lx", GETS(i, sh_addr) + GETS(i, sh_size)));
+	for (i_off = 0; i_off < GETS(i, sh_size); i_off += 0x10)
+	{
+		j_max = MIN(0x10, GETS(i, sh_size) - i_off);
+		printf(" %0*lx ", (int)addr_size, GETS(i, sh_addr) + i_off);
+
+		for (j = 0; j < j_max; j++)
+			printf("%02x%s", data[i_off + j], !((j + 1) % 4) ? " " : "");
+		for (j = j_max; j < 0x10; j++)
+			printf("%s%s", "  ", !((j + 1) % 4) ? " " : "");
+		printf(" ");
+		for (j = 0; j < j_max; j++)
+			printf("%c", (data[i_off + j] >= 32
+				&& data[i_off + j] <= 126) ? data[i_off + j] : '.');
+		for (j = j_max; j < 0x10; j++)
+			printf("%c", ' ');
+		printf("\n");
+	}
+	free(data);
+	return (num);
+}
+
+/**
+ * dump_all_sections - objdumps each section
+ * @h: pointer to elf header struct
+ * @fd: the file descriptor of the file
+ * @num: pointer to var storing number of symbols printed
+ * Return: 0 on success else exit_status
+ */
+int dump_all_sections(header *h, int fd, size_t *num)
+{
+	char *string_table = NULL;
+	size_t i;
+
+	if (!GETE(e_shnum))
+	{
+		printf("\nThere are no section headers in this file.\n");
+		return (0);
+	}
+	read_section_headers(h, fd);
+	for (i = 0; i < GETE(e_shnum); i++)
+		switch_end_sec(h, i);
+	string_table = read_string_table(h, fd);
+	header_print(h, string_table);
+	for (i = 1; i < GETE(e_shnum); i++)
+	{
+		if (strcmp(string_table + GETS(i, sh_name), ".dynstr") &&
+			((!strncmp(string_table + GETS(i, sh_name), ".rel", 4) &&
+			!GETS(i, sh_addr))
+			|| GETS(i, sh_type) == SHT_SYMTAB || GETS(i, sh_type) == SHT_NOBITS
+			|| GETS(i, sh_type) == SHT_STRTAB || !GETS(i, sh_size)))
+			continue;
+		*num += dump_section(h, fd, i, string_table);
+	}
+	free(string_table);
+	return (0);
+}
+
+/**
+ * check_magic - checks if header matches magic bytes
+ * @h: 16 byte buffer holding elf header
+ * Return: 0 if ELF else 1
+ */
+int check_magic(char *h)
+{
+	if (h[0] == 0x7f && h[1] == 0x45 &&
+		h[2] == 0x4c && h[3] == 0x46)
+		return (0);
+	return (1);
+}
+
+/**
+ * hobjdump - displays bytes of the given file
+ * @filename: name of file to process
+ * @argv: the argument
+ * Return: 0 on success else 1 on failure
+ */
+int hobjdump(char *filename, char *argv)
+{
+	int fd, exit_status = 0;
+	size_t r, num = 0;
+	header h;
+
+	memset(&h, 0, sizeof(h));
+
+	fd = open(filename, O_RDONLY);
+	if (fd == -1)
+		return (EXIT_FAILURE);
+
+	r = read(fd, &h.e64, sizeof(h.e64));
+	if (r != sizeof(h.e64) || check_magic((char *)&h.e64))
+	{
+		fprintf(stderr, "%s: %s: File format not recognized\n",
+				argv, filename);
+		exit_status = EXIT_FAILURE;
+	}
+	else
+	{
+		if (h.e64.e_ident[EI_CLASS] == ELFCLASS32)
+		{
+			lseek(fd, 0, SEEK_SET);
+			r = read(fd, &h.e32, sizeof(h.e32));
+			if (r != sizeof(h.e32) || check_magic((char *)&h.e32))
+			{
+				exit_status = fprintf(stderr,
+					"%s: File format not recognized\n",
+					argv);
+				return (EXIT_FAILURE);
+			}
+		}
+		switch_endians(&h);
+		printf("\n%s:     file format %s\n",
+			filename, get_file_format(&h));
+		exit_status = dump_all_sections(&h, fd, &num);
+	}
+	free(h.s32), free(h.s64), free(h.p32), free(h.p64);
+	close(fd);
+	return (exit_status);
+}
+
+/**
+ * main - entry point
+ * @ac: argument count
+ * @argv: argument vector
+ * Return: 0 on success or 1+ on error
+ */
+int main(int ac, char **argv)
+{
+	int ret = EXIT_SUCCESS;
+
+	if (ac < 2)
+	{
+		fprintf(stderr, "hnm elf_filename\n");
+		return (EXIT_FAILURE);
+	}
+	if (ac == 2)
+		return (hobjdump(argv[1], argv[0]));
+	return (ret);
+}

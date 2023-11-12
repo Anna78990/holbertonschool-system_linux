@@ -14,20 +14,20 @@ int check_magic(char *h)
 }
 
 /**
- * hnm - displays symbols for 1 file
- * @file_name: name of file to process
- * @argv: the argument vector
- * Return: 0 on success else 1 on error
+ * hnm - displays symbols of the given file
+ * @filename: name of file to process
+ * @argv: the argument
+ * Return: 0 on success else 1 on failure
  */
-int hnm(char *file_name, char *argv)
+int hnm(char *filename, char *argv)
 {
 	int fd, exit_status = 0;
-	size_t r, num_printed = 0;
+	size_t r, num = 0;
 	header h;
 
 	memset(&h, 0, sizeof(h));
 
-	fd = open(file_name, O_RDONLY);
+	fd = open(filename, O_RDONLY);
 	if (fd == -1)
 		return (EXIT_FAILURE);
 
@@ -35,7 +35,7 @@ int hnm(char *file_name, char *argv)
 	if (r != sizeof(h.e64) || check_magic((char *)&h.e64))
 	{
 		fprintf(stderr, "%s: %s: File format not recognized\n",
-				argv, file_name);
+				argv, filename);
 		exit_status = EXIT_FAILURE;
 	}
 	else
@@ -53,9 +53,9 @@ int hnm(char *file_name, char *argv)
 			}
 		}
 		switch_endians(&h);
-		exit_status = print_all_symbol_tables(&h, fd, &num_printed);
-		if (!num_printed)
-			fprintf(stderr, "%s: %s: no symbols\n", argv, file_name);
+		exit_status = print_all_symbol_tables(&h, fd, &num);
+		if (!num)
+			fprintf(stderr, "%s: %s: no symbols\n", argv, filename);
 	}
 	free(h.s32), free(h.s64), free(h.p32), free(h.p64);
 	close(fd);
