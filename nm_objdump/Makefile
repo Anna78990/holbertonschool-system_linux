@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -pedantic -std=gnu90 -g
 
-SRC0 = hnm.c endians.c symbol_endians.c print_sections_1.c print_symbols1.c print_symbols2.c
+SRC0 = hnm.c endians.c symbol_endians.c section.c symbol_print.c symbol_print2.c
 OBJ0 = $(SRC0:.c=.o)
 NAME0 = hnm
 

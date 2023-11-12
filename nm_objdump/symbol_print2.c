@@ -2,49 +2,49 @@
 
 /**
  * read_symbol_table - reads the symbol headers into data
- * @elf_header: the internal header
+ * @h: the internal header
  * @fd: file descriptor to read
  * @i: the current symbol section to print
  */
-void read_symbol_table(header *elf_header, int fd, int i)
+void read_symbol_table(header *h, int fd, int i)
 {
 	size_t r;
 	char *headers;
-	size_t read_size = SGET(i, sh_size);
+	size_t read_size = GETS(i, sh_size);
 
 	headers = calloc(1, read_size);
 	if (!headers)
 		exit(1);
-	lseek(fd, SGET(i, sh_offset), SEEK_SET);
+	lseek(fd, GETS(i, sh_offset), SEEK_SET);
 	r = read(fd, headers, read_size);
 	if (r < read_size)
 	{
 		fprintf(stderr, "Symbol read failed.\n");
 		exit(1);
 	}
-	if (IS_32(elf_header->e64))
-		elf_header->sym32 = (void *)headers;
+	if (h->e64.e_ident[EI_CLASS] == ELFCLASS32)
+		h->sym32 = (void *)headers;
 	else
-		elf_header->sym64 = (void *)headers;
+		h->sym64 = (void *)headers;
 }
 
 /**
  * read_symbol_string_table - reads the string table
- * @elf_header: the internal header
+ * @h: the internal header
  * @fd: file descriptor to read
  * @i: the current symbol section to print
  * Return: pointer to beginning of table
  */
-char *read_symbol_string_table(header *elf_header, int fd, int i)
+char *read_symbol_string_table(header *h, int fd, int i)
 {
 	char *str;
 
-	str = calloc(1, SGET(i, sh_size));
+	str = calloc(1, GETS(i, sh_size));
 	if (!str)
 		exit(1);
 
-	lseek(fd, SGET(i, sh_offset), SEEK_SET);
-	read(fd, str, SGET(i, sh_size));
+	lseek(fd, GETS(i, sh_offset), SEEK_SET);
+	read(fd, str, GETS(i, sh_size));
 	return (str);
 }
 
