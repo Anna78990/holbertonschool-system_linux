@@ -52,10 +52,13 @@ void print_python_bytes(PyObject *p)
 	{
 		printf("%02x", ((PyBytesObject *)p)->ob_sval[i]);
 		if (i + 1 == size || (i + 1) == 9)
+		{
 			printf("\n");
+			break;
+		}
 		else
 			printf(" ");
-			
+		
 	}
 
 }
