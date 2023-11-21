@@ -48,7 +48,7 @@ void print_python_bytes(PyObject *p)
 	printf("  trying string: %s\n", ((PyBytesObject *)p)->ob_sval);
 
 	printf("  first %ld bytes: ", size < 9 ? size + 1 : 10);
-	for (i = 0; i <= size && i < 10; i++)
+	for (i = 0; i + 1 < size && i < 10; i++)
 	{
 		printf("%02x", ((PyBytesObject *)p)->ob_sval[i]);
 		if (i + 1 == size || (i + 1) == 9)
