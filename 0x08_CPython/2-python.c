@@ -44,13 +44,13 @@ void print_python_bytes(PyObject *p)
 		return;
 	}
 
-	size = PyObject_Size(p);
+	size = ((PyVarObject *)p)->ob_size;
 	printf("  size: %ld\n", size);
 
 	str = (unsigned char *)PyBytes_AsString(p);
-	printf("  trying string: %s\n", str);
+	printf("  trying string: %s\n", ((PyBytesObject *)p)->ob_sval);
 
-	printf("  first %ld bytes: ", size < 10 ? size : 10);
-	for (i = 0; i < size && i < 10; i++)
+	printf("  first %ld bytes: ", size < 10 ? size + 1 : 10);
+	for (i = 0; i <= size && i < 10; i++)
 		printf("%02x%s", str[i], i < size - 1 && i < 9 ? " " : "\n");
 }
