@@ -7,16 +7,16 @@
  */
 void print_python_string(PyObject *p)
 {
-	printf("[.] string object info\n");
+	wprintf(L"[.] string object info\n");
 	if (!p || p->ob_type != &PyUnicode_Type)
 	{
-		printf("  [ERROR] Invalid String Object\n");
+		wprintf(L"  [ERROR] Invalid String Object\n");
 		return;
 	}
 	if (((PyASCIIObject *)p)->state.ascii)
-		printf("  type: compact ascii\n");
+		wprintf(L"  type: compact ascii\n");
 	else
-		printf("  type: compact unicode object\n");
+		wprintf(L"  type: compact unicode object\n");
 	wprintf(L"  length: %ld\n", ((PyASCIIObject *)p)->length);
 	wprintf(L"  value: %ls\n", PyUnicode_AS_UNICODE(p));
 }
