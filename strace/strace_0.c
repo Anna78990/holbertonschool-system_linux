@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
 	pid_t child;
 	struct user_regs_struct regs;
 
+	setbuf(stdout, NULL);
 	if (argc < 2)
 		exit(EXIT_FAILURE);
 	child = fork();
