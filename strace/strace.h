@@ -11,6 +11,7 @@
 #include <sys/user.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include "syscalls.h"
 
 #define NAME_PARAMS	0
 #define RET		1
