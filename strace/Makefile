@@ -3,3 +3,6 @@ strace_0: strace_0.c
 
 strace_1: strace_1.c
 	gcc -Wall -Werror -Wextra -pedantic -std=gnu89 -g3 strace_1.c -o strace_1
+
+strace_2: strace_2.c
+	gcc -Wall -Werror -Wextra -pedantic -std=gnu89 -g3 strace_2.c -o strace_2
