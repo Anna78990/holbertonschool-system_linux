@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 				break;
 			memset(&regs, 0, sizeof(regs));
 			ptrace(PTRACE_GETREGS, child, 0, &regs);
-			printf("%s = ", syscalls_64_g[regs.orig_rax].name);
+			printf("%s", syscalls_64_g[regs.orig_rax].name);
 			if (syscall_await(child))
 			{
 				printf("?\n");
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 			}
 			memset(&regs, 0, sizeof(regs));
 			ptrace(PTRACE_GETREGS, child, 0, &regs);
-			printf("%#lx\n", (long)regs.rax);
+			printf(" = %#lx\n", (long)regs.rax);
 		}
 	}
 	return (0);
