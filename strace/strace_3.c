@@ -41,7 +41,6 @@ void print_params(struct user_regs_struct *reg)
 		else
 			printf("...");
 	}
-	printf(")");
 }
 
 /**
@@ -101,15 +100,15 @@ int main(int argc, char *argv[])
 			memset(&regs, 0, sizeof(regs));
 			ptrace(PTRACE_GETREGS, child, 0, &regs);
 			printf("%s", syscalls_64_g[regs.orig_rax].name);
+			print_params(&regs);
 			if (syscall_await(child))
 			{
-				printf("(0) = ?\n");
+				printf(") = ?\n");
 				break;
 			}
 			memset(&regs, 0, sizeof(regs));
 			ptrace(PTRACE_GETREGS, child, 0, &regs);
-			print_params(&regs);
-			printf(" = %#lx\n", (long)regs.rax);
+			printf(") = %#lx\n", (long)regs.rax);
 		}
 	}
 	return (0);
