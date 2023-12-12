@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 			printf("%s", syscalls_64_g[regs.orig_rax].name);
 			if (syscall_await(child))
 			{
-				printf(" = ?\n");
+				printf("(0) = ?\n");
 				break;
 			}
 			memset(&regs, 0, sizeof(regs));
