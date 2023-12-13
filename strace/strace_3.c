@@ -70,7 +70,7 @@ int syscall_await(pid_t child)
  * @argv: arguments
  * Return: 0 if succeed, otherwise exit status
  */
-int main(int argc, char *argv[])
+int main(int argc, char *argv[], char **envp)
 {
 	int status;
 	pid_t child;
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 	{
 		ptrace(PTRACE_TRACEME, 0, 0, 0);
 		kill(getpid(), SIGSTOP);
-		if (execv(argv[1], argv + 1) == -1)
+		if (execve(argv[1], argv + 1, envp) == -1)
 			exit(-1);
 	}
 	else
