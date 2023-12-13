@@ -25,6 +25,8 @@ void print_params(struct user_regs_struct *reg)
 			printf(", ");
 		if (syscalls_64_g[reg->orig_rax].params[i] != VARARGS)
 		{
+			if (syscalls_64_g[reg->orig_rax].params[i] == VOID)
+				break;
 			if (i == 0)
 				printf("%#lx", (long)reg->rdi);
 			else if (i == 1)
