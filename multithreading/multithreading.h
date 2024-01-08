@@ -111,7 +111,6 @@ typedef struct task_s
 void *thread_entry(void *arg);
 int tprintf(char const *format, ...);
 void blur_portion(blur_portion_t const *portion);
-pixel_t **create_array(const img_t *img);
 void blur_pixel(const blur_portion_t *portion, const pixel_t **pixels,
 		size_t x, size_t y, size_t pidx);
 void blur_image(img_t *img_blur, img_t const *img, kernel_t const *kernel);
