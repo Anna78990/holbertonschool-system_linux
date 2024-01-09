@@ -26,7 +26,7 @@ void p_factorize(unsigned long n, list_t *factors)
 			n /= i;
 		}
 	}
-	if (n > 2)
+	if (n > 1)
 	{
 		prime = calloc(1, sizeof(unsigned long));
 		*prime = n;
