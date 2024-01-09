@@ -4,24 +4,34 @@
 #include "list.h"
 
 /**
- * is_prime - Checks if a number is prime
- * @n: number to check
- * Return: 1 if the number is prime, 0 otherwise
+ * p_factorize - make the chain of list prime number to factorize
+ * @n: number to analyze
+ * @factors: the head of list
  */
-int is_prime(unsigned long n)
+void p_factorize(unsigned long n, list_t *factors)
 {
-	unsigned long i;
+	unsigned long i, *prime = NULL;
 
-	if (n < 2)
-		return (0);
-
-	for (i = 2; i * i <= n; i++)
+	for (i = 2; i < n; i++)
 	{
-		if (n % i == 0)
-			return (0);
+		if (i * i > n)
+			break;
+		if (n % i != 0)
+			continue;
+		while (n % i == 0)
+		{
+			prime = calloc(1, sizeof(unsigned long));
+			prime = i;
+			list_add(factors, prime);
+			n /= i;
+		}
 	}
-
-	return (1);
+	if (n > 2)
+	{
+		prime = calloc(1, sizeof(unsigned long));
+		prime = n;
+		list_add(factors, prime);
+	}
 }
 
 /**
@@ -33,31 +43,16 @@ int is_prime(unsigned long n)
  */
 list_t *prime_factors(char const *s)
 {
-	unsigned long num = strtoul(s, NULL, 10);
 	list_t *factors = list_init(malloc(sizeof(list_t)));
-	unsigned long divisor = 2;
-	unsigned long *factor;
+	unsigned long n = 0;
+	int i = 0;
 
-	if (num < 2)
-		return (factors);
-
-	while (num > 1)
+	while (s[i])
 	{
-		if (num % divisor == 0)
-		{
-			if (is_prime(divisor))
-			{
-				factor = malloc(sizeof(unsigned long));
-				*factor = divisor;
-				list_add(factors, factor);
-				num /= divisor;
-			}
-			else
-				divisor++;
-		}
-		else
-			divisor++;
+		n = (n * 10) + (s[i] - '0');
+		i++;
 	}
 
+	p_factorize(n, factors);
 	return (factors);
 }
