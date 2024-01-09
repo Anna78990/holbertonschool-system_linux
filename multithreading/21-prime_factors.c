@@ -21,7 +21,7 @@ void p_factorize(unsigned long n, list_t *factors)
 		while (n % i == 0)
 		{
 			prime = calloc(1, sizeof(unsigned long));
-			prime = i;
+			*prime = i;
 			list_add(factors, prime);
 			n /= i;
 		}
@@ -29,7 +29,7 @@ void p_factorize(unsigned long n, list_t *factors)
 	if (n > 2)
 	{
 		prime = calloc(1, sizeof(unsigned long));
-		prime = n;
+		*prime = n;
 		list_add(factors, prime);
 	}
 }
