@@ -12,15 +12,14 @@
 task_t *create_task(task_entry_t entry, void *param)
 {
 	task_t *task = (task_t *)malloc(sizeof(task_t));
-		if (task == NULL)
-			return (NULL);
+
+	if (task == NULL)
+		return (NULL);
 
 	task->entry = entry;
 	task->param = param;
 	task->status = PENDING;
 	task->result = NULL;
-	pthread_mutex_init(&(task->lock), NULL);
-
 	return (task);
 }
 
@@ -31,10 +30,11 @@ task_t *create_task(task_entry_t entry, void *param)
  */
 void destroy_task(task_t *task)
 {
-	if (task == NULL)
-		return;
-
-	pthread_mutex_destroy(&(task->lock));
+	if (task->result)
+	{
+		list_destroy((list_t *) task->result, free);
+		free((list_t *) task->result);
+	}
 	free(task);
 }
 
@@ -46,38 +46,30 @@ void destroy_task(task_t *task)
 void *exec_tasks(list_t const *tasks)
 {
 	task_t *task;
+	int i = 0;
 	node_t *current;
 
 	if (tasks == NULL)
 		return (NULL);
 
 	current = tasks->head;
-
 	while (current != NULL)
 	{
 		task = (task_t *)current->content;
 
-		pthread_mutex_lock(&(task->lock));
-
 		if (task->status == PENDING)
 		{
 			task->status = STARTED;
-			pthread_mutex_unlock(&(task->lock));
-
-			tprintf("[%lu] [%lu] Started\n", pthread_self(), task->param);
-
+			tprintf("[%02d] Started\n", i);
 			task->result = task->entry(task->param);
-
-			pthread_mutex_lock(&(task->lock));
-			task->status = SUCCESS;
-			pthread_mutex_unlock(&(task->lock));
-
-			tprintf("[%lu] [%lu] Success\n", pthread_self(), task->param);
-		} else
-			pthread_mutex_unlock(&(task->lock));
-
+			tprintf("[%02d] Success\n", i);
+			if (task->result == NULL)
+				task->status = FAILURE;
+			else
+				task->status = SUCCESS;
+		}
 		current = current->next;
+		i++;
 	}
-
 	return (NULL);
 }
