@@ -1,6 +1,0 @@
-alex@~/0x0C-sockets$ curl -D - 'http://localhost:8080/todos' 2> /dev/null | cat -e
-HTTP/1.1 200 OK^M$
-Content-Length: 128^M$
-Content-Type: application/json^M$
-^M$
-[{"id":0,"title":"Dishes","description":"Not_really_urgent"},{"id":1,"title":"Laundry","description":"To_be_done_by_yesterday"}]alex@~/0x0C-sockets$ 
